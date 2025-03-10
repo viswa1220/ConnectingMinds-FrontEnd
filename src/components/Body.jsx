@@ -21,8 +21,8 @@ const Body = () => {
     } catch (err) {
       if (err.status === 401) {
         navigate("/login");
-      } 
-      console.log("error",err)
+      }
+      console.log("error", err);
     }
   };
 
@@ -31,11 +31,14 @@ const Body = () => {
   }, []);
   return (
     <div>
-      <div className="max-w-screen-xl  mx-auto px-1 m-2 py-4">
-        <NavBar></NavBar>
-        <Outlet></Outlet>
+      <div className="container mx-auto p-4">
+        <NavBar />
+        <Outlet />
       </div>
+      <div className="mt-4">
       <Footer></Footer>
+      </div>
+      
     </div>
   );
 };
