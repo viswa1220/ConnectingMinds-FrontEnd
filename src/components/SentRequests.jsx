@@ -7,6 +7,8 @@ import {
   FiClock,
   FiXCircle,
   FiArrowLeft,
+  FiStar,
+  FiCode,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
@@ -16,10 +18,10 @@ const SentRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("pending"); // 'pending', 'accepted', 'rejected'
+
   const loggedInUser = useSelector((state) => state.user);
   const loggedInUserId = loggedInUser?._id;
 
-  // Fetch sent requests
   useEffect(() => {
     const fetchSentRequests = async () => {
       setLoading(true);
@@ -27,7 +29,7 @@ const SentRequests = () => {
         const res = await axios.get(`${BASE_URL}/api/people/requests`, {
           withCredentials: true,
         });
-        // Filter to only those requests sent by logged in user
+        // Filter to only those requests sent by logged-in user
         const filtered = res.data.data.filter(
           (req) => req.fromUserId._id === loggedInUserId
         );
@@ -44,16 +46,15 @@ const SentRequests = () => {
   // Filter requests based on active tab
   const filteredRequests = sentRequests.filter((req) => req.status === activeTab);
 
-  if (loading)
-    return <div className="text-center text-gray-400">Loading...</div>;
-  if (error)
-    return <div className="text-center text-red-500">{error}</div>;
-  if (sentRequests.length === 0)
+  if (loading) return <div className="text-center text-gray-400">Loading...</div>;
+  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (sentRequests.length === 0) {
     return (
-      <div className="text-center text-gray-400">
+      <div className="min-h-screen text-center text-gray-400">
         No sent requests found.
       </div>
     );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
@@ -101,51 +102,94 @@ const SentRequests = () => {
       {/* Requests Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRequests.length > 0 ? (
-          filteredRequests.map((request) => (
-            <div
-              key={request._id}
-              className="p-4 bg-gradient-to-b from-gray-800 to-gray-700 rounded-lg shadow-lg"
-            >
-              <div className="flex items-center mb-4">
-                <img
-                  src={request.toUserId.photoUrl || "https://via.placeholder.com/50"}
-                  alt="Profile"
-                  className="w-12 h-12 rounded-full mr-3"
-                />
-                <div>
-                  <h3 className="text-xl font-bold text-yellow-400">
-                    {request.toUserId.firstName} {request.toUserId.lastName}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    Joined: {dayjs(request.toUserId.createdAt).format("DD MMM YYYY")}
-                  </p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-400 mb-2">
-                Sent on: {dayjs(request.createdAt).format("DD MMM YYYY")}
-              </p>
+          filteredRequests.map((request) => {
+            const user = request.toUserId;
+            // Convert skills/interests to arrays (handle both string/array)
+            let skillsArray = Array.isArray(user.skills)
+              ? user.skills
+              : typeof user.skills === "string"
+              ? user.skills.split(",")
+              : [];
+            skillsArray = skillsArray.map((s) => s.trim()).filter((s) => s);
 
-              {/* Status Badge */}
-              {request.status === "pending" && (
-                <div className="mt-4 p-2 w-full bg-yellow-600 rounded-full text-center">
-                  <FiClock className="inline-block mr-2" />
-                  Pending
+            let interestsArray = Array.isArray(user.interests)
+              ? user.interests
+              : typeof user.interests === "string"
+              ? user.interests.split(",")
+              : [];
+            interestsArray = interestsArray.map((i) => i.trim()).filter((i) => i);
+
+            return (
+              <div
+                key={request._id}
+                className="p-4 bg-gradient-to-b from-gray-800 to-gray-700 rounded-lg shadow-lg"
+              >
+                <div className="flex items-center mb-4">
+                  <img
+                    src={user.photoUrl || "https://via.placeholder.com/50"}
+                    alt="Profile"
+                    className="w-12 h-12 rounded-full mr-3 object-cover"
+                  />
+                  <div>
+                    <h3 className="text-xl font-bold text-yellow-400">
+                      {user.firstName} {user.lastName}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      Joined: {dayjs(user.createdAt).format("DD MMM YYYY")}
+                    </p>
+                  </div>
                 </div>
-              )}
-              {request.status === "accepted" && (
-                <div className="mt-4 p-2 w-full bg-green-600 rounded-full text-center">
-                  <FiUserCheck className="inline-block mr-2" />
-                  Connected
+
+                {/* Skills */}
+                <div className="mb-2">
+                  <h4 className="text-sm font-bold text-green-300 mb-1">Skills</h4>
+                  {skillsArray.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {skillsArray.map((skill, index) => (
+                        <button
+                          key={index}
+                          className="flex items-center bg-green-600 hover:bg-green-500 transition text-xs px-3 py-1 rounded-full"
+                          disabled
+                        >
+                          <FiStar className="inline mr-1" />
+                          {skill}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-400">No skills provided.</p>
+                  )}
                 </div>
-              )}
-              {request.status === "rejected" && (
-                <div className="mt-4 p-2 w-full bg-red-600 rounded-full text-center">
-                  <FiXCircle className="inline-block mr-2" />
-                  Rejected
-                </div>
-              )}
-            </div>
-          ))
+
+              
+
+                {/* Sent Date */}
+                <p className="text-sm text-gray-400 mb-2">
+                  Sent on: {dayjs(request.createdAt).format("DD MMM YYYY")}
+                </p>
+
+                {/* Status Badge */}
+                {request.status === "pending" && (
+                  <div className="mt-4 p-2 w-full bg-yellow-600 rounded-full text-center">
+                    <FiClock className="inline-block mr-2" />
+                    Pending
+                  </div>
+                )}
+                {request.status === "accepted" && (
+                  <div className="mt-4 p-2 w-full bg-green-600 rounded-full text-center">
+                    <FiUserCheck className="inline-block mr-2" />
+                    Connected
+                  </div>
+                )}
+                {request.status === "rejected" && (
+                  <div className="mt-4 p-2 w-full bg-red-600 rounded-full text-center">
+                    <FiXCircle className="inline-block mr-2" />
+                    Rejected
+                  </div>
+                )}
+              </div>
+            );
+          })
         ) : (
           <div className="text-center text-gray-400 w-full col-span-3">
             No {activeTab} requests found.

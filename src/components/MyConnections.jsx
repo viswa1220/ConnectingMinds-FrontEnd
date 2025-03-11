@@ -112,7 +112,7 @@ const MyConnections = () => {
   if (error)
     return <div className="text-center text-red-500">{error}</div>;
   if (connections.length === 0)
-    return <div className="text-center text-gray-400">No connections found.</div>;
+    return <div className="min-h-screen text-center text-gray-400">No connections found.</div>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">

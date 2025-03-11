@@ -38,16 +38,12 @@ const MyWorkingProjects = () => {
     if (loggedInUserId) fetchWorkingProjects();
   }, [loggedInUserId]);
 
-  const handleOpenChat = (project) => {
-    console.log("🔄 Opening chat for project:", project._id);
-    setSelectedProject(project);
-    setIsChatOpen(true);
-  };
+ 
 
   if (loading) return <div className="text-white text-center">Loading...</div>;
-  if (error) return <div className="text-red-500 text-center">{error}</div>;
+  if (error) return <div className=" text-red-500 text-center">{error}</div>;
   if (projects.length === 0)
-    return <div className="text-gray-400 text-center">No projects found.</div>;
+    return <div className="min-h-screen text-gray-400 text-center">No projects found.</div>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">

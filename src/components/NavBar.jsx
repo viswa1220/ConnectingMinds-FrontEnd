@@ -8,8 +8,8 @@ import {
   FaProjectDiagram,
   FaSignOutAlt,
   FaTasks,
+  FaBars,
 } from "react-icons/fa";
-import { BsPersonCheckFill } from "react-icons/bs";
 import { RiTeamFill } from "react-icons/ri";
 import {
   FiUserCheck,
@@ -23,89 +23,96 @@ const NavBar = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  // State management for dropdowns
+
   const [dropdownOpen, setDropdownOpen] = useState(null);
-  const [isHovered, setIsHovered] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        BASE_URL + "/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
       dispatch(removeUser());
       navigate("/login");
     } catch (err) {
-      console.log("Logout Failed: " + err);
+      console.log("Logout Failed: ", err);
     }
   };
 
-  // Handles dropdown visibility
-  const handleDropdownToggle = (name) => {
+  const toggleDropdown = (name) => {
     setDropdownOpen((prev) => (prev === name ? null : name));
   };
 
-  const handleMouseEnter = (name) => {
-    setIsHovered(name);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev);
+    setDropdownOpen(null);
   };
 
-  const handleMouseLeave = () => {
-    setIsHovered(null);
+  const closeDropdown = () => {
+    setDropdownOpen(null);
   };
 
   return (
     <div className="sticky top-0 z-50">
-      <div className="navbar bg-base-300 text-white shadow-lg">
-        <div className="flex-1">
-          <Link to="/" className="btn btn-ghost text-2xl font-bold tracking-wide">
-            Connecting Minds
-          </Link>
-          {user && (
-            <span className="ml-4 text-lg">
-              Welcome, {user.firstName}!
-            </span>
-          )}
-        </div>
+  {/* Navbar with increased height */}
+  <div className="navbar bg-base-300 text-white shadow-lg h-24 flex flex-wrap">
+    {/* Left section: Brand Image + (optional) Welcome + Hamburger */}
+    <div className="flex-1 flex items-center justify-between">
+      <div className="flex items-center h-full">
+        <Link to="/" className="btn btn-ghost h-full flex items-center">
+          {/* Larger logo height */}
+          <img
+            src="/ConnectingMinds.png"
+            alt="Connecting Minds Logo"
+            className="h-20 w-32 object-contain"
+          />
+        </Link>
+        {user && (
+          <span className="ml-4 hidden md:inline">
+            Welcome, {user.firstName}!
+          </span>
+        )}
+      </div>
+      <button className="btn btn-ghost md:hidden" onClick={toggleMobileMenu}>
+        <FaBars className="text-2xl" />
+      </button>
+    </div>
 
-        <div className="flex-none gap-4 flex items-center">
+
+        {/* Right section: nav links (desktop) or stacked (mobile) */}
+        <div
+          className={`${
+            isMobileMenuOpen ? "block" : "hidden"
+          } md:flex md:items-center md:gap-4 w-full md:w-auto transition-all`}
+        >
           {user && (
             <>
               {/* Projects Dropdown */}
-              <div
-                className="relative inline-block"
-                onMouseEnter={() => handleMouseEnter("projects")}
-                onMouseLeave={handleMouseLeave}
-              >
+              <div className="relative inline-block">
                 <button
-                  onClick={() => handleDropdownToggle("projects")}
-                  className="btn btn-ghost flex items-center gap-2"
+                  onClick={() => toggleDropdown("projects")}
+                  className="btn btn-ghost flex items-center gap-2 w-full md:w-auto"
                 >
                   <FaProjectDiagram className="text-2xl text-primary" />
-                  <span className="hidden md:inline">Projects</span>
+                  <span>Projects</span>
                 </button>
-                {(dropdownOpen === "projects" || isHovered === "projects") && (
+                {dropdownOpen === "projects" && (
                   <div className="absolute left-0 mt-2 w-52 bg-base-200 rounded-md shadow-lg z-50">
                     <ul className="menu p-2">
                       <li>
-                        <Link to="/my-projects" className="flex items-center">
+                        <Link to="/my-projects" onClick={closeDropdown}>
                           <FaTasks className="mr-2 text-success" />
-                          My Projects
+                          Owned Projects
                         </Link>
                       </li>
                       <li>
-                        <Link to="/join-requests" className="flex items-center">
+                        <Link to="/join-requests" onClick={closeDropdown}>
                           <FiUserPlus className="mr-2 text-info" />
-                          Join Requests
+                          Project Join Requests
                         </Link>
                       </li>
                       <li>
-                        <Link to="/my-working-projects" className="flex items-center">
+                        <Link to="/my-working-projects" onClick={closeDropdown}>
                           <RiTeamFill className="mr-2 text-secondary" />
-                          My Working Projects
+                          Joined Projects
                         </Link>
                       </li>
                     </ul>
@@ -114,43 +121,39 @@ const NavBar = () => {
               </div>
 
               {/* Connections Dropdown */}
-              <div
-                className="relative inline-block"
-                onMouseEnter={() => handleMouseEnter("connections")}
-                onMouseLeave={handleMouseLeave}
-              >
+              <div className="relative inline-block">
                 <button
-                  onClick={() => handleDropdownToggle("connections")}
-                  className="btn btn-ghost flex items-center gap-2"
+                  onClick={() => toggleDropdown("connections")}
+                  className="btn btn-ghost flex items-center gap-2 w-full md:w-auto"
                 >
                   <RiTeamFill className="text-2xl text-secondary" />
-                  <span className="hidden md:inline">Connections</span>
+                  <span>Connections</span>
                 </button>
-                {(dropdownOpen === "connections" || isHovered === "connections") && (
+                {dropdownOpen === "connections" && (
                   <div className="absolute left-0 mt-2 w-52 bg-base-200 rounded-md shadow-lg z-50">
                     <ul className="menu p-2">
                       <li>
-                        <Link to="/my-connections" className="flex items-center">
-                          <BsPersonCheckFill className="mr-2 text-success" />
+                        <Link to="/my-connections" onClick={closeDropdown}>
+                          <FiUserCheck className="mr-2 text-success" />
                           My Connections
                         </Link>
                       </li>
                       <li>
-                        <Link to="/received-requests" className="flex items-center">
-                          <FiUserCheck className="mr-2 text-info" />
-                          Received Requests
+                        <Link to="/received-requests" onClick={closeDropdown}>
+                          <FiUserPlus className="mr-2 text-info" />
+                          Incoming Connection Requests
                         </Link>
                       </li>
                       <li>
-                        <Link to="/sent-requests" className="flex items-center">
+                        <Link to="/sent-requests" onClick={closeDropdown}>
                           <FiUserMinus className="mr-2 text-warning" />
-                          Sent Requests
+                          Outgoing Connection Requests
                         </Link>
                       </li>
                       <li>
-                        <Link to="/people/feed" className="flex items-center">
+                        <Link to="/people/feed" onClick={closeDropdown}>
                           <FiUserPlus className="mr-2 text-primary" />
-                          Similar Interests
+                          Discover People
                         </Link>
                       </li>
                     </ul>
@@ -160,9 +163,8 @@ const NavBar = () => {
             </>
           )}
 
-          {/* User Profile and Settings */}
           {user && (
-            <div className="dropdown dropdown-end mx-5 relative z-50">
+            <div className="dropdown dropdown-end mx-5 relative">
               <div
                 tabIndex={0}
                 role="button"
@@ -177,22 +179,16 @@ const NavBar = () => {
                 className="menu menu-sm dropdown-content bg-base-200 rounded-box z-50 mt-3 w-52 p-2 shadow"
               >
                 <li>
-                  <Link to="/profile" className="flex items-center">
+                  <Link to="/profile">
                     <FaUser className="mr-2" />
                     Profile
                   </Link>
                 </li>
                 <li>
-                  <Link to="/settings" className="flex items-center">
-                    <FiSettings className="mr-2" />
-                    Settings
-                  </Link>
-                </li>
-                <li>
-                  <a onClick={handleLogout} className="flex items-center cursor-pointer">
+                  <button onClick={handleLogout} className="flex items-center justify-start">
                     <FaSignOutAlt className="mr-2" />
                     Logout
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>

@@ -19,6 +19,7 @@ import MyConnections from "./components/MyConnections";
 import ReceivedRequests from "./components/ReceivedRequests";
 import CollaboratorsChat from "./components/CollaboratorsChat";
 import CollabChatPage from "./components/CollabChatPage";
+import SignUp from "./components/SignUp";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Body />}>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/people-feed" element={<PeopleFeedPage />} />
             <Route path="/project-feed" element={<ProjectFeedPage />} />

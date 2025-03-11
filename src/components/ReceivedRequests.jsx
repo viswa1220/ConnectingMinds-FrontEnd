@@ -43,8 +43,9 @@ const ReceivedRequests = () => {
 
         // Filter requests received by the logged-in user with status = pending
         const filteredRequests = res.data.data.filter((req) => {
-          return req.toUserId._id === loggedInUserId && req.status === "pending";
+          return req.toUserId._id.toString() === loggedInUserId && req.status === "pending";
         });
+        
 
         setReceivedRequests(filteredRequests);
       } catch (err) {
@@ -115,7 +116,7 @@ const ReceivedRequests = () => {
     return <div className="text-center text-red-500">{error}</div>;
   if (receivedRequests.length === 0)
     return (
-      <div className="text-center text-gray-400">
+      <div className="min-h-screen text-center text-gray-400">
         No received requests found.
       </div>
     );

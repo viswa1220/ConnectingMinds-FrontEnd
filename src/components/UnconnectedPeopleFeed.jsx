@@ -73,7 +73,7 @@ const UnconnectedPeopleFeed = () => {
 
   if (loading) return <div className="text-center text-gray-400">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
-  if (people.length === 0) return <div className="text-center text-gray-400">No suggestions found.</div>;
+  if (people.length === 0) return <div className="min-h-screen text-center text-gray-400">No suggestions found.</div>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
