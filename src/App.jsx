@@ -21,10 +21,11 @@ import ReceivedRequests from "./components/ReceivedRequests";
 import CollaboratorsChat from "./components/CollaboratorsChat";
 import CollabChatPage from "./components/CollabChatPage";
 
-// Simple component to protect routes using your Redux store.
 function RequireAuth({ children }) {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  // Here we check if there's a valid user.
+  // Adjust this if your logic for determining authentication is different.
+  const user = useSelector((state) => state.user);
+  return user ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
@@ -166,7 +167,6 @@ export default function App() {
                 </RequireAuth>
               }
             />
-
             {/* Error or fallback route */}
             <Route path="/error" element={<ErrorPage />} />
           </Route>
