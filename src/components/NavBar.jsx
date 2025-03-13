@@ -35,8 +35,9 @@ const NavBar = () => {
       setLoggingOut(true); // ✅ Show loader
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
   
-      dispatch(removeUser()); // ✅ Remove user from Redux
-      await new Promise((resolve) => setTimeout(resolve, 500)); // ⏳ Small delay for consistency
+      dispatch(removeUser()); 
+      document.cookie = "token=; Max-Age=0; path=/; domain=.thoughtsunite.com";
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // ⏳ Small delay for consistency
       navigate("/login"); // ✅ Now navigate AFTER logout is fully done
     } catch (err) {
       console.log("Logout Failed: ", err);
