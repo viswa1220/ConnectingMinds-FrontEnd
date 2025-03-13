@@ -4,6 +4,10 @@ import { addUser, removeUser } from "../utils/userSlice";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useState, useEffect } from "react";
+import { persistStore } from "redux-persist";
+import appStore from "../utils/appStore"; // Import Redux store
+
+const persistor = persistStore(appStore);
 
 const useAuth = () => {
   const dispatch = useDispatch();
@@ -17,13 +21,22 @@ const useAuth = () => {
       const res = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
       });
+
       if (res.data && res.data._id) {
         dispatch(addUser(res.data));
       } else {
         dispatch(removeUser());
       }
-    } catch {
+    } catch (err) {
       dispatch(removeUser());
+
+      // 🚀 If the user is not logged in, prevent re-fetching
+      if (err.response && err.response.status === 401) {
+        sessionStorage.clear();
+        localStorage.clear();
+        persistor.purge(); // ✅ Ensure Redux persist is reset
+        navigate("/login", { replace: true });
+      }
     } finally {
       setLoading(false);
     }
@@ -33,14 +46,20 @@ const useAuth = () => {
     fetchUser();
   }, []);
 
-  // ✅ Logout function
+  // ✅ Logout function with full cleanup
   const logout = async () => {
     try {
       setLoading(true);
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+
+      // Remove Redux user data
       dispatch(removeUser());
-      document.cookie = "token=; Max-Age=0; path=/; domain=.thoughtsunite.com";
-      sessionStorage.clear(); // ✅ Ensure session storage is cleared
+
+      // ✅ Clear persisted storage
+      persistor.purge();
+      sessionStorage.clear();
+      localStorage.clear();
+
       navigate("/login", { replace: true });
     } catch (err) {
       console.error("Logout Failed: ", err);
