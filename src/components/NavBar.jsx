@@ -32,19 +32,22 @@ const NavBar = () => {
 
   const handleLogout = async () => {
     try {
-      setLoggingOut(true); // ✅ Show loader
+      setLoggingOut(true);
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-
+  
+      // No need to manually delete the cookie, backend will handle it
       dispatch(removeUser());
-      document.cookie = "token=; Max-Age=0; path=/; domain=.thoughtsunite.com";
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // ⏳ Small delay for consistency
-      navigate("/login"); // ✅ Now navigate AFTER logout is fully done
+  
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
     } catch (err) {
-      console.log("Logout Failed: ", err);
+      console.error("Logout Failed:", err);
     } finally {
       setLoggingOut(false);
     }
   };
+  
 
   const toggleDropdown = (name) => {
     setDropdownOpen((prev) => (prev === name ? null : name));
