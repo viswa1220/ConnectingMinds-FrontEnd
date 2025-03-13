@@ -17,10 +17,18 @@ import {
   FiUserPlus,
   FiSettings,
 } from "react-icons/fi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const NavBar = () => {
-  const user = useSelector((store) => store.user);
+  const reduxUser = useSelector((store) => store.user);
+const [user, setUser] = useState(null);
+
+useEffect(() => {
+  if (reduxUser) {
+    setUser(reduxUser);
+    console.log("Navbar updated with user:", reduxUser);
+  }
+}, [reduxUser]);  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
