@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
-    <footer className="w-full bg-[#4B4896] text-white py-4 px-6">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+    <footer className=" w-full bg-[#4B4896] text-white py-4 px-6">
+      <div className="sticky bottom-0 z-50 relative container mx-auto flex flex-col md:flex-row justify-between items-center">
         <div className="flex items-center space-x-2">
           <svg
             width="30"

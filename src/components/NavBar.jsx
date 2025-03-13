@@ -12,11 +12,7 @@ import {
   FaBars,
 } from "react-icons/fa";
 import { RiTeamFill } from "react-icons/ri";
-import {
-  FiUserCheck,
-  FiUserMinus,
-  FiUserPlus,
-} from "react-icons/fi";
+import { FiUserCheck, FiUserMinus, FiUserPlus } from "react-icons/fi";
 
 const NavBar = () => {
   const reduxUser = useSelector((store) => store.user);
@@ -114,7 +110,10 @@ const NavBar = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/my-working-projects" onClick={closeDropdown}>
+                          <Link
+                            to="/my-working-projects"
+                            onClick={closeDropdown}
+                          >
                             <RiTeamFill className="mr-2" />
                             Joined Projects
                           </Link>
@@ -209,178 +208,178 @@ const NavBar = () => {
 
       {/* Mobile Layout */}
       <div className="md:hidden">
-  {/* Mobile Navbar */}
-  <div className="flex flex-col bg-white text-[#4B4896] shadow-lg">
-    {/* Row 1: Logo & Menu Toggle */}
-    <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
-      <Link to="/feed" className="flex items-center">
-        <img
-          src="/ConnectingMinds.png"
-          alt="Connecting Minds Logo"
-          className="h-16 w-auto object-contain"
-        />
-      </Link>
-      <button
-        className="btn btn-ghost"
-        onClick={toggleMobileMenu}
-        aria-label="Toggle Mobile Menu"
-      >
-        <FaBars className="text-2xl" />
-      </button>
-    </div>
-
-    {/* Row 2: Mobile Nav Links */}
-    <div
-      className={`${
-        isMobileMenuOpen ? "block" : "hidden"
-      } transition-all duration-300`}
-    >
-      {reduxUser && (
-        <div className="px-4 py-2 space-y-3">
-          {/* Projects */}
-          <div className="border-b border-gray-200 pb-2">
+        {/* Mobile Navbar */}
+        <div className="flex flex-col bg-white text-[#4B4896] shadow-lg">
+          {/* Row 1: Logo & Menu Toggle */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
+            <Link to="/feed" className="flex items-center">
+              <img
+                src="/ConnectingMinds.png"
+                alt="Connecting Minds Logo"
+                className="h-16 w-auto object-contain"
+              />
+            </Link>
             <button
-              onClick={() => toggleDropdown("projects")}
-              className="w-full text-left font-semibold flex items-center gap-2"
+              className="btn btn-ghost"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle Mobile Menu"
             >
-              <FaProjectDiagram className="text-xl" />
-              <span>Projects</span>
+              <FaBars className="text-2xl" />
             </button>
-            {dropdownOpen === "projects" && (
-              <ul className="pl-4 mt-1 space-y-1">
-                <li>
-                  <Link
-                    to="/my-projects"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FaTasks className="text-lg" />
-                    Owned Projects
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/join-requests"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FiUserPlus className="text-lg" />
-                    Project Join Requests
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/my-working-projects"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <RiTeamFill className="text-lg" />
-                    Joined Projects
-                  </Link>
-                </li>
-              </ul>
-            )}
           </div>
 
-          {/* Connections */}
-          <div className="border-b border-gray-200 pb-2">
-            <button
-              onClick={() => toggleDropdown("connections")}
-              className="w-full text-left font-semibold flex items-center gap-2"
-            >
-              <RiTeamFill className="text-xl" />
-              <span>Connections</span>
-            </button>
-            {dropdownOpen === "connections" && (
-              <ul className="pl-4 mt-1 space-y-1">
-                <li>
-                  <Link
-                    to="/my-connections"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FiUserCheck className="text-lg" />
-                    My Connections
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/received-requests"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FiUserPlus className="text-lg" />
-                    Incoming Requests
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/sent-requests"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FiUserMinus className="text-lg" />
-                    Outgoing Requests
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/people/feed"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FiUserPlus className="text-lg" />
-                    Discover People
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </div>
-
-          {/* Profile */}
-          <div className="border-b border-gray-200 pb-2">
-            <button
-              onClick={() => toggleDropdown("profile")}
-              className="w-full text-left font-semibold flex items-center gap-2"
-            >
-              <FaUser className="text-xl" />
-              <span>Profile</span>
-            </button>
-            {dropdownOpen === "profile" && (
-              <ul className="pl-4 mt-1 space-y-1">
-                <li>
-                  <Link
-                    to="/profile"
-                    onClick={closeDropdown}
-                    className="flex items-center gap-2"
-                  >
-                    <FaUser className="text-lg" />
-                    Profile
-                  </Link>
-                </li>
-                <li>
+          {/* Row 2: Mobile Nav Links */}
+          <div
+            className={`${
+              isMobileMenuOpen ? "block" : "hidden"
+            } transition-all duration-300`}
+          >
+            {reduxUser && (
+              <div className="px-4 py-2 space-y-3">
+                {/* Projects */}
+                <div className="border-b border-gray-200 pb-2">
                   <button
-                    onClick={handleLogout}
-                    className="w-full text-left flex items-center gap-2"
+                    onClick={() => toggleDropdown("projects")}
+                    className="w-full text-left font-semibold flex items-center gap-2"
                   >
-                    {loggingOut ? (
-                      <span className="loading loading-spinner"></span>
-                    ) : (
-                      <>
-                        <FaSignOutAlt className="text-lg" />
-                        Logout
-                      </>
-                    )}
+                    <FaProjectDiagram className="text-xl" />
+                    <span>Projects</span>
                   </button>
-                </li>
-              </ul>
+                  {dropdownOpen === "projects" && (
+                    <ul className="pl-4 mt-1 space-y-1">
+                      <li>
+                        <Link
+                          to="/my-projects"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FaTasks className="text-lg" />
+                          Owned Projects
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/join-requests"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FiUserPlus className="text-lg" />
+                          Project Join Requests
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/my-working-projects"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <RiTeamFill className="text-lg" />
+                          Joined Projects
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+
+                {/* Connections */}
+                <div className="border-b border-gray-200 pb-2">
+                  <button
+                    onClick={() => toggleDropdown("connections")}
+                    className="w-full text-left font-semibold flex items-center gap-2"
+                  >
+                    <RiTeamFill className="text-xl" />
+                    <span>Connections</span>
+                  </button>
+                  {dropdownOpen === "connections" && (
+                    <ul className="pl-4 mt-1 space-y-1">
+                      <li>
+                        <Link
+                          to="/my-connections"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FiUserCheck className="text-lg" />
+                          My Connections
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/received-requests"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FiUserPlus className="text-lg" />
+                          Incoming Requests
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/sent-requests"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FiUserMinus className="text-lg" />
+                          Outgoing Requests
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          to="/people/feed"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FiUserPlus className="text-lg" />
+                          Discover People
+                        </Link>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+
+                {/* Profile */}
+                <div className="border-b border-gray-200 pb-2">
+                  <button
+                    onClick={() => toggleDropdown("profile")}
+                    className="w-full text-left font-semibold flex items-center gap-2"
+                  >
+                    <FaUser className="text-xl" />
+                    <span>Profile</span>
+                  </button>
+                  {dropdownOpen === "profile" && (
+                    <ul className="pl-4 mt-1 space-y-1">
+                      <li>
+                        <Link
+                          to="/profile"
+                          onClick={closeDropdown}
+                          className="flex items-center gap-2"
+                        >
+                          <FaUser className="text-lg" />
+                          Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left flex items-center gap-2"
+                        >
+                          {loggingOut ? (
+                            <span className="loading loading-spinner"></span>
+                          ) : (
+                            <>
+                              <FaSignOutAlt className="text-lg" />
+                              Logout
+                            </>
+                          )}
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
-      )}
-    </div>
-  </div>
-</div>
+      </div>
     </div>
   );
 };
