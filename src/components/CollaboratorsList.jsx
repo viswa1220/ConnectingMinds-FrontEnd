@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { fetchCollaborators } from "../api/projectApi";
 import { useNavigate } from "react-router-dom";
 import defaultProfilePic from "../assets/defaultProfilePic.png"; // Default image if no photoUrl
+import { BASE_URL } from "../utils/constants";
 
 const CollaboratorsList = ({ projectId, userId }) => {
   const [collaborators, setCollaborators] = useState([]);
@@ -28,7 +29,7 @@ const CollaboratorsList = ({ projectId, userId }) => {
   // Handle starting a direct chat
   const handleChatStart = async (collaboratorId) => {
     try {
-      const response = await fetch("http://localhost:3000/api/chat/direct", {
+      const response = await fetch(`${BASE_URL}/chat/direct`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -20,12 +20,18 @@ const ReceivedRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Get logged-in user ID from Redux store
+  // Get logged-in user from Redux store
   const loggedInUser = useSelector((state) => state.user);
   const loggedInUserId = loggedInUser?._id;
 
-  // Fetch received connection requests from the new endpoint
+  // Early return if user info isn't available yet
+  if (!loggedInUserId) {
+    return <div className="text-center text-gray-400">Loading user info...</div>;
+  }
+
+  // Fetch received connection requests when loggedInUserId is available
   useEffect(() => {
+    console.log("Logged in user ID:", loggedInUserId);
     const fetchReceivedRequests = async () => {
       setLoading(true);
       try {
@@ -33,17 +39,17 @@ const ReceivedRequests = () => {
           `${BASE_URL}/api/people/requests/received`,
           { withCredentials: true }
         );
+        console.log("Fetched received requests:", res.data.data);
         setReceivedRequests(res.data.data);
       } catch (err) {
+        console.error("Error fetching received requests:", err);
         setError(err.response?.data?.message || "Failed to fetch requests.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (loggedInUserId) {
-      fetchReceivedRequests();
-    }
+    fetchReceivedRequests();
   }, [loggedInUserId]);
 
   // Handle Accept Request
