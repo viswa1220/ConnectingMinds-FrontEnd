@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firbase";
@@ -11,6 +11,9 @@ const Signup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const [alreadyLoggedIn, setAlreadyLoggedIn] = useState(false);
+
+  // Form states
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,39 +33,22 @@ const Signup = () => {
   });
   const [imageFile, setImageFile] = useState(null);
 
-  // If user is logged in, ask to logout before showing signup form.
+  // Check if user is already logged in
   useEffect(() => {
     if (user) {
-      const confirmLogout = window.confirm(
-        "You are already logged in. Do you want to log out to create a new account?"
-      );
-      if (confirmLogout) {
-        axios
-          .post(`${BASE_URL}/logout`, {}, { withCredentials: true })
-          .then(() => {
-            dispatch(removeUser());
-          })
-          .catch((err) => {
-            alert("Failed to logout. Please try again.");
-            navigate("/feed");
-          });
-      } else {
-        navigate("/feed");
-      }
+      setAlreadyLoggedIn(true);
+    } else {
+      setAlreadyLoggedIn(false);
     }
-  }, [user, dispatch, navigate]);
+  }, [user]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
+  // Handler for file input change
   const handleFileChange = (e) => {
     setImageFile(e.target.files[0]);
   };
 
+  // Handler to move from step 1 to step 2 (validate required fields)
   const handleNext = () => {
-    // Validate that all mandatory fields in step 1 are filled.
     if (
       !formData.firstName ||
       !formData.lastName ||
@@ -77,6 +63,7 @@ const Signup = () => {
     setStep((prev) => prev + 1);
   };
 
+  // Handler to go back to the previous step
   const handleBack = () => {
     setError("");
     setStep((prev) => prev - 1);
@@ -111,8 +98,8 @@ const Signup = () => {
     }
   };
 
+  // Handler to submit the signup form
   const handleSubmit = async () => {
-    // Validate that all mandatory fields in step 2 are filled (image is optional)
     if (
       !formData.about ||
       !formData.experience ||
@@ -150,8 +137,33 @@ const Signup = () => {
     }
   };
 
+  // If a user is already logged in, show a message instead of the signup form.
+  if (alreadyLoggedIn) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-base-100 text-white">
+        <div className="bg-neutral shadow-lg rounded-md w-full max-w-md p-6">
+          <h2 className="text-xl font-bold mb-4 text-center">
+            You are already logged in.
+          </h2>
+          <div className="flex justify-center">
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate("/feed")}
+            >
+              Go to Feed
+            </button>
+          </div>
+          <p className="text-center mt-4">
+            Or, if you want to create a new account, please logout first.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render signup form if no user is logged in.
   return (
-    <div className="flex justify-center items-center min-h-screen bg-base-100 text-white">
+    <div className="flex justify-center items-center mt-8 bg-base-100 text-white">
       <div className="bg-neutral shadow-lg rounded-md w-full max-w-lg p-6">
         <h2 className="text-2xl font-bold mb-6 text-center text-primary">Sign Up</h2>
         <p className="text-center mb-4">
@@ -160,53 +172,84 @@ const Signup = () => {
             Login
           </Link>
         </p>
+
         {step === 1 && (
           <div>
+            <label className="block mb-1 text-sm font-medium">
+              First Name
+            </label>
             <input
               type="text"
               name="firstName"
-              placeholder="First Name"
+              placeholder="Enter your first name"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.firstName}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, firstName: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Last Name
+            </label>
             <input
               type="text"
               name="lastName"
-              placeholder="Last Name"
+              placeholder="Enter your last name"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.lastName}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, lastName: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Email Address
+            </label>
             <input
               type="email"
               name="emailId"
-              placeholder="Email"
+              placeholder="Enter your email"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.emailId}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, emailId: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Password
+            </label>
             <input
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.password}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, password: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Age
+            </label>
             <input
               type="number"
               name="age"
-              placeholder="Age"
+              placeholder="Enter your age"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.age}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, age: e.target.value }))
+              }
               required
             />
+
             {error && <p className="text-error text-center mb-4">{error}</p>}
             <button
               className="btn btn-primary w-full"
@@ -217,69 +260,110 @@ const Signup = () => {
             </button>
           </div>
         )}
+
         {step === 2 && (
           <div>
+            <label className="block mb-1 text-sm font-medium">
+              Gender
+            </label>
             <select
               name="gender"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.gender}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, gender: e.target.value }))
+              }
               required
             >
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="others">Others</option>
             </select>
+
+            <label className="block mb-1 text-sm font-medium">
+              Upload Profile Picture
+            </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
               className="mb-4"
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              About You
+            </label>
             <textarea
               name="about"
-              placeholder="About You"
+              placeholder="Tell us about yourself"
               className="textarea textarea-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.about}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, about: e.target.value }))
+              }
               required
             ></textarea>
+
+            <label className="block mb-1 text-sm font-medium">
+              Experience (in years)
+            </label>
             <input
               type="text"
               name="experience"
-              placeholder="Experience (in years)"
+              placeholder="Enter your experience"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.experience}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, experience: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Tech Stack (comma separated)
+            </label>
             <input
               type="text"
               name="techStack"
-              placeholder="Tech Stack (comma separated)"
+              placeholder="e.g., React, Node.js, MongoDB"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.techStack}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, techStack: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Skills (comma separated)
+            </label>
             <input
               type="text"
               name="skills"
-              placeholder="Skills (comma separated)"
+              placeholder="e.g., Problem Solving, Communication"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.skills}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, skills: e.target.value }))
+              }
               required
             />
+
+            <label className="block mb-1 text-sm font-medium">
+              Interests (comma separated)
+            </label>
             <input
               type="text"
               name="interests"
-              placeholder="Interests (comma separated)"
+              placeholder="e.g., Music, Sports, Coding"
               className="input input-bordered w-full mb-4 bg-base-100 text-white"
               value={formData.interests}
-              onChange={handleChange}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, interests: e.target.value }))
+              }
               required
             />
+
             {error && <p className="text-error text-center mb-4">{error}</p>}
             <div className="flex justify-between">
               <button

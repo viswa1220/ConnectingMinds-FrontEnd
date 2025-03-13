@@ -14,51 +14,47 @@ const Body = () => {
   const userData = useSelector((store) => store.user);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch user only if not removed from Redux
+  // Function to fetch and refresh the user data
   const fetchUser = async () => {
-    if (!userData) {
-      setLoading(false);
-      return; // 🔥 Stop fetching if user is already removed
-    }
-
     try {
       const res = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
       });
-
       if (res.data && res.data._id) {
-        dispatch(addUser(res.data)); // ✅ Add user if valid response
+        dispatch(addUser(res.data));
       } else {
-        dispatch(removeUser()); // ✅ Ensure user is fully removed
+        dispatch(removeUser());
       }
-
-      setLoading(false);
     } catch (err) {
       if (err.response?.status === 401) {
-        dispatch(removeUser()); // ✅ Remove user on unauthorized
+        dispatch(removeUser());
         navigate("/login");
       } else {
         console.log("Fetch user error:", err);
       }
+    } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Ensure user data updates properly
   useEffect(() => {
-    if (userData === null) {
+    // Allow public routes (/login, /signup) to be accessed without redirection
+    const publicPaths = ["/login", "/signup"];
+    if (!userData && !publicPaths.includes(location.pathname)) {
+      navigate("/login");
       setLoading(false);
-    } else {
+    } else if (userData) {
       fetchUser();
+    } else {
+      setLoading(false);
     }
-  }, [userData]); // ✅ Runs when Redux user changes
+  }, [userData, location.pathname, navigate]);
 
-  // ✅ Show loading state until user data is ready
   if (loading) {
     return <div className="text-center text-gray-400">Loading...</div>;
   }
 
-  // ✅ Hide the footer on specific routes
+  // Hide the footer on specific routes if desired
   const hideFooter = ["/login", "/signup"].some((path) =>
     location.pathname.startsWith(path)
   );

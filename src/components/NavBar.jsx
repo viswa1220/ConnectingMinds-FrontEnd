@@ -17,18 +17,11 @@ import {
   FiUserPlus,
   FiSettings,
 } from "react-icons/fi";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const NavBar = () => {
   const reduxUser = useSelector((store) => store.user);
-const [user, setUser] = useState(null);
-
-useEffect(() => {
-  if (reduxUser) {
-    setUser(reduxUser);
-    console.log("Navbar updated with user:", reduxUser);
-  }
-}, [reduxUser]);  
+  // Use reduxUser directly; no need for separate local state.
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -60,30 +53,27 @@ useEffect(() => {
 
   return (
     <div className="sticky top-0 z-50">
-  {/* Navbar with increased height */}
-  <div className="navbar bg-base-300 text-white shadow-lg h-24 flex flex-wrap">
-    {/* Left section: Brand Image + (optional) Welcome + Hamburger */}
-    <div className="flex-1 flex items-center justify-between">
-      <div className="flex items-center h-full">
-        <Link to="/feed" className="btn btn-ghost h-full flex items-center">
-          {/* Larger logo height */}
-          <img
-            src="/ConnectingMinds.png"
-            alt="Connecting Minds Logo"
-            className="h-20 w-32 object-contain"
-          />
-        </Link>
-        {user && (
-          <span className="ml-4 hidden md:inline">
-            Welcome, {user.firstName}!
-          </span>
-        )}
-      </div>
-      <button className="btn btn-ghost md:hidden" onClick={toggleMobileMenu}>
-        <FaBars className="text-2xl" />
-      </button>
-    </div>
-
+      <div className="navbar bg-base-300 text-white shadow-lg h-24 flex flex-wrap">
+        {/* Left section: Brand Image + (optional) Welcome + Hamburger */}
+        <div className="flex-1 flex items-center justify-between">
+          <div className="flex items-center h-full">
+            <Link to="/feed" className="btn btn-ghost h-full flex items-center">
+              <img
+                src="/ConnectingMinds.png"
+                alt="Connecting Minds Logo"
+                className="h-20 w-32 object-contain"
+              />
+            </Link>
+            {reduxUser && (
+              <span className="ml-4 hidden md:inline">
+                Welcome, {reduxUser.firstName}!
+              </span>
+            )}
+          </div>
+          <button className="btn btn-ghost md:hidden" onClick={toggleMobileMenu}>
+            <FaBars className="text-2xl" />
+          </button>
+        </div>
 
         {/* Right section: nav links (desktop) or stacked (mobile) */}
         <div
@@ -91,7 +81,7 @@ useEffect(() => {
             isMobileMenuOpen ? "block" : "hidden"
           } md:flex md:items-center md:gap-4 w-full md:w-auto transition-all`}
         >
-          {user && (
+          {reduxUser && (
             <>
               {/* Projects Dropdown */}
               <div className="relative inline-block">
@@ -149,13 +139,13 @@ useEffect(() => {
                       <li>
                         <Link to="/received-requests" onClick={closeDropdown}>
                           <FiUserPlus className="mr-2 text-info" />
-                          Incoming Connection Requests
+                          Incoming Requests
                         </Link>
                       </li>
                       <li>
                         <Link to="/sent-requests" onClick={closeDropdown}>
                           <FiUserMinus className="mr-2 text-warning" />
-                          Outgoing Connection Requests
+                          Outgoing Requests
                         </Link>
                       </li>
                       <li>
@@ -171,7 +161,7 @@ useEffect(() => {
             </>
           )}
 
-          {user && (
+          {reduxUser && (
             <div className="dropdown dropdown-end mx-5 relative">
               <div
                 tabIndex={0}
@@ -179,7 +169,7 @@ useEffect(() => {
                 className="btn btn-ghost btn-circle avatar transition-transform hover:scale-105"
               >
                 <div className="w-10 rounded-full">
-                  <img alt="user photo" src={user.photoUrl} />
+                  <img alt="user photo" src={reduxUser.photoUrl} />
                 </div>
               </div>
               <ul
@@ -193,7 +183,10 @@ useEffect(() => {
                   </Link>
                 </li>
                 <li>
-                  <button onClick={handleLogout} className="flex items-center justify-start">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-start"
+                  >
                     <FaSignOutAlt className="mr-2" />
                     Logout
                   </button>
