@@ -1,9 +1,10 @@
 /** @type {import('tailwindcss').Config} */
-import daisyui from "daisyui"
+import daisyui from "daisyui";
+
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", 
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
@@ -22,11 +23,22 @@ export default {
           "success": "#36D399",
           "warning": "#FBBD23",
           "error": "#F87272",
-          // You can customize further based on DaisyUI variables
         },
       },
-      "dark", // You can also fall back to DaisyUI's built-in dark theme if needed
+      {
+        "connecting-minds": {
+          "primary": "#6968AA", // Soft Purple
+          "secondary": "#10B981", // Emerald Green
+          "accent": "#F59E0B", // Soft Orange
+          "neutral": "#F3F4F6", // Light Gray for cards/panels
+          "base-100": "#FFFFFF", // White background
+          "info": "#3ABFF8",
+          "success": "#36D399",
+          "warning": "#FBBD23",
+          "error": "#F87272",
+        },
+      },
+      "dark", // DaisyUI's built-in dark theme
     ],
   },
-}
-
+};

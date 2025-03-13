@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
-import { FiMessageCircle, FiUsers, FiArrowLeft } from "react-icons/fi";
+import { FiMessageCircle, FiUsers, FiArrowLeft, FiClipboard } from "react-icons/fi"; // ✅ Added FiClipboard
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
-import CollabChatPage from "./CollabChatPage";  // ✅ Import CollabChatPage directly
+import CollabChatPage from "./CollabChatPage";
 
 const MyWorkingProjects = () => {
   const [projects, setProjects] = useState([]);
@@ -38,10 +38,8 @@ const MyWorkingProjects = () => {
     if (loggedInUserId) fetchWorkingProjects();
   }, [loggedInUserId]);
 
- 
-
   if (loading) return <div className="text-white text-center">Loading...</div>;
-  if (error) return <div className=" text-red-500 text-center">{error}</div>;
+  if (error) return <div className="text-red-500 text-center">{error}</div>;
   if (projects.length === 0)
     return <div className="min-h-screen text-gray-400 text-center">No projects found.</div>;
 
@@ -109,12 +107,24 @@ const MyWorkingProjects = () => {
                 {proj.collaborators?.length || 0}
               </span>
             </p>
+
+            {/* Chat Button */}
             <button
-              onClick={() => navigate(`/collab-chat/${proj._id}/group`)}  // ✅ Direct navigation to CollabChatPage
+              onClick={() => navigate(`/collab-chat/${proj._id}/group`)}
               className="mt-4 w-full p-2 bg-purple-600 rounded-full text-center hover:bg-purple-500 transition"
             >
               <FiMessageCircle className="inline-block mr-2" />
               Chat
+            </button>
+
+            {/* Manage Tasks Button */}
+            <button
+              className="mt-4 w-full p-2 bg-yellow-600 rounded-full text-center hover:bg-yellow-500 transition"
+              onClick={() => navigate(`/projects/${proj._id}/tasks`)} // ✅ Navigate to task management page
+              title="Manage Tasks"
+            >
+              <FiClipboard className="inline-block mr-2" />
+              Manage Tasks
             </button>
           </motion.div>
         ))}

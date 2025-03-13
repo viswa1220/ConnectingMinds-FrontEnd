@@ -162,6 +162,8 @@ const FeedPage = () => {
         </div>
       </div>
 
+      
+
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mb-20">
         {loadingProjects ? (
           <p className="text-gray-400 text-center">Loading projects...</p>
