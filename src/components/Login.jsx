@@ -16,14 +16,24 @@ const Login = () => {
   const [error, setError] = useState("");
   const [alreadyLoggedIn, setAlreadyLoggedIn] = useState(false);
 
-  // Check if user is already logged in and on /login
+  // ✅ Improved check for auth state (prevents incorrect "Already Logged In" message)
   useEffect(() => {
-    if (user && location.pathname === "/login") {
-      setAlreadyLoggedIn(true);
-    } else {
-      setAlreadyLoggedIn(false);
+    const checkAuthStatus = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/profile/view`, {
+          withCredentials: true,
+        });
+        dispatch(addUser(res.data)); // Ensure Redux is updated
+        setAlreadyLoggedIn(true);
+      } catch (err) {
+        setAlreadyLoggedIn(false); // If error (401 unauthorized), user is logged out
+      }
+    };
+
+    if (location.pathname === "/login") {
+      checkAuthStatus();
     }
-  }, [user, location.pathname]);
+  }, [dispatch, location.pathname]);
 
   const handleLogin = async () => {
     try {
@@ -57,7 +67,6 @@ const Login = () => {
                   Go to Feed
                 </button>
               </div>
-            
             </>
           ) : (
             <>

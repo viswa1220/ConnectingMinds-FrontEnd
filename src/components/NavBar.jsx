@@ -34,8 +34,8 @@ const NavBar = () => {
     try {
       setLoggingOut(true); // ✅ Show loader
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-  
-      dispatch(removeUser()); 
+
+      dispatch(removeUser());
       document.cookie = "token=; Max-Age=0; path=/; domain=.thoughtsunite.com";
       await new Promise((resolve) => setTimeout(resolve, 1000)); // ⏳ Small delay for consistency
       navigate("/login"); // ✅ Now navigate AFTER logout is fully done
@@ -45,7 +45,6 @@ const NavBar = () => {
       setLoggingOut(false);
     }
   };
-  
 
   const toggleDropdown = (name) => {
     setDropdownOpen((prev) => (prev === name ? null : name));
@@ -195,19 +194,21 @@ const NavBar = () => {
                   </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center justify-start"
-                  >
-                    {loggingOut ? (
-                      <span className="loading loading-spinner"></span> // ✅ Show loader while logging out
-                    ) : (
-                      <>
-                        <FaSignOutAlt className="mr-2" />
-                        Logout
-                      </>
-                    )}
-                  </button>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center justify-start"
+                    >
+                      {loggingOut ? (
+                        <span className="loading loading-spinner"></span>
+                      ) : (
+                        <>
+                          <FaSignOutAlt className="mr-2" />
+                          Logout
+                        </>
+                      )}
+                    </button>
+                  </li>
                 </li>
               </ul>
             </div>
