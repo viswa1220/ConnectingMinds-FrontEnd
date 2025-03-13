@@ -34,10 +34,10 @@ const NavBar = () => {
     try {
       setLoggingOut(true);
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-  
+
       // No need to manually delete the cookie, backend will handle it
       dispatch(removeUser());
-  
+
       setTimeout(() => {
         navigate("/login");
       }, 1000);
@@ -47,7 +47,6 @@ const NavBar = () => {
       setLoggingOut(false);
     }
   };
-  
 
   const toggleDropdown = (name) => {
     setDropdownOpen((prev) => (prev === name ? null : name));
@@ -196,23 +195,22 @@ const NavBar = () => {
                     Profile
                   </Link>
                 </li>
-             
-                  <li>
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center justify-start"
-                    >
-                      {loggingOut ? (
-                        <span className="loading loading-spinner"></span>
-                      ) : (
-                        <>
-                          <FaSignOutAlt className="mr-2" />
-                          Logout
-                        </>
-                      )}
-                    </button>
-                  </li>
-               
+
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-start"
+                  >
+                    {loggingOut ? (
+                      <span className="loading loading-spinner"></span>
+                    ) : (
+                      <>
+                        <FaSignOutAlt className="mr-2" />
+                        Logout
+                      </>
+                    )}
+                  </button>
+                </li>
               </ul>
             </div>
           )}

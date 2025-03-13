@@ -21,26 +21,16 @@ const useAuth = () => {
       const res = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
       });
-
+  
       if (res.data && res.data._id) {
-        dispatch(addUser(res.data));
-      } else {
-        dispatch(removeUser());
+        dispatch(addUser(res.data)); 
       }
     } catch (err) {
+      console.log("User not authenticated.");
       dispatch(removeUser());
-
-      // 🚀 If the user is not logged in, prevent re-fetching
-      if (err.response && err.response.status === 401) {
-        sessionStorage.clear();
-        localStorage.clear();
-        persistor.purge(); // ✅ Ensure Redux persist is reset
-        navigate("/login", { replace: true });
-      }
-    } finally {
-      setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchUser();
