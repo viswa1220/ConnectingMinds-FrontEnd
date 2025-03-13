@@ -1,11 +1,11 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Footer from "./Footer";
-import NavBar from "./NavBar";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, removeUser } from "../utils/userSlice";
+import { addUser } from "../utils/userSlice";
 import { useEffect, useState } from "react";
+import NavBar from "./NavBar";
 
 const Body = () => {
   const dispatch = useDispatch();
@@ -14,41 +14,40 @@ const Body = () => {
   const userData = useSelector((store) => store.user);
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch and refresh the user data
   const fetchUser = async () => {
+    // If we already have user data, stop loading
+    if (userData) {
+      setLoading(false);
+      return;
+    }
     try {
       const res = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
       });
-      if (res.data && res.data._id) {
-        dispatch(addUser(res.data));
-      } else {
-        dispatch(removeUser());
-      }
+      dispatch(addUser(res.data));
+      setLoading(false);
     } catch (err) {
-      if (err.response?.status === 401) {
-        dispatch(removeUser());
+      // Check for a 401 error from the server
+      if (err.response && err.response.status === 401) {
         navigate("/login");
       } else {
-        console.log("Fetch user error:", err);
+        console.log("error", err);
       }
-    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (userData) {
-      fetchUser();
-    } else {
-      setLoading(false);
-    }
-  }, [userData, location.pathname, navigate]);
+    fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // While loading, you could return a spinner or similar
   if (loading) {
-    return <div className="text-center text-gray-400">Loading...</div>;
+    return <div>Loading...</div>;
   }
 
+  // Optionally hide the footer on specific pages
   const hideFooter = ["/login", "/signup"].some((path) =>
     location.pathname.startsWith(path)
   );
@@ -60,7 +59,7 @@ const Body = () => {
         <Outlet />
       </div>
       {!hideFooter && (
-        <div className="mt-2 mx-auto p-4">
+        <div className="mt-4">
           <Footer />
         </div>
       )}
