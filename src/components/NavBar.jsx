@@ -28,13 +28,18 @@ const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = async () => {
     try {
+      setLoggingOut(true); // ✅ Show loader
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
       dispatch(removeUser());
       navigate("/login");
     } catch (err) {
       console.log("Logout Failed: ", err);
+    } finally {
+      setLoggingOut(false);
     }
   };
 
@@ -70,7 +75,10 @@ const NavBar = () => {
               </span>
             )}
           </div>
-          <button className="btn btn-ghost md:hidden" onClick={toggleMobileMenu}>
+          <button
+            className="btn btn-ghost md:hidden"
+            onClick={toggleMobileMenu}
+          >
             <FaBars className="text-2xl" />
           </button>
         </div>
@@ -187,8 +195,14 @@ const NavBar = () => {
                     onClick={handleLogout}
                     className="flex items-center justify-start"
                   >
-                    <FaSignOutAlt className="mr-2" />
-                    Logout
+                    {loggingOut ? (
+                      <span className="loading loading-spinner"></span> // ✅ Show loader while logging out
+                    ) : (
+                      <>
+                        <FaSignOutAlt className="mr-2" />
+                        Logout
+                      </>
+                    )}
                   </button>
                 </li>
               </ul>
