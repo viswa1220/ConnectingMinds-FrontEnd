@@ -17,21 +17,26 @@ const Login = () => {
 
   // ✅ Fetch user on mount to ensure correct authentication state
   useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/profile/view`, {
-          withCredentials: true,
-          headers: { "Cache-Control": "no-cache" },
-        });
-
-        dispatch(addUser(res.data)); // ✅ Update Redux with the logged-in user
-      } catch (err) {
-        console.log("User is not logged in.");
-      }
-    };
-
-    checkAuthStatus();
-  }, [dispatch]);
+    if (!user) { // ✅ Only fetch if user is null
+      const checkAuthStatus = async () => {
+        try {
+          const res = await axios.get(`${BASE_URL}/profile/view`, {
+            withCredentials: true,
+            headers: { "Cache-Control": "no-cache" }, // Ensure fresh request
+          });
+  
+          if (res.data && res.data._id) {
+            dispatch(addUser(res.data)); // ✅ Update Redux with user session
+          }
+        } catch (err) {
+          console.log("User is not logged in.");
+        }
+      };
+  
+      checkAuthStatus();
+    }
+  }, [dispatch, user]); // ✅ Runs only when `user` is null
+  
 
   // ✅ Redirect logged-in users to /feed
   useEffect(() => {
