@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import { waitForRehydration } from "../utils/appStore"; // ✅ Import this function
+import { waitForRehydration } from "../utils/appStore";
 
 const useAuth = () => {
   const dispatch = useDispatch();
@@ -12,14 +12,14 @@ const useAuth = () => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      await waitForRehydration(); 
+      await waitForRehydration();
       try {
         const res = await axios.get(`${BASE_URL}/profile/view`, {
           withCredentials: true,
         });
 
         if (res.data && res.data._id) {
-          dispatch(addUser(res.data));
+          dispatch(addUser({ user: res.data })); // ✅ Ensure payload matches
         }
       } catch (err) {
         dispatch(removeUser());

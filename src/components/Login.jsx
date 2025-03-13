@@ -14,7 +14,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Handle Login
   const handleLogin = async () => {
     try {
       setLoading(true);
@@ -24,7 +23,8 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      dispatch(addUser({ ...res.data.user, token: res.data.token }));
+      // ✅ Ensure payload matches the userSlice expectations
+      dispatch(addUser({ user: res.data.user }));
       navigate("/feed");
     } catch (err) {
       setError(err?.response?.data || "Something went wrong");

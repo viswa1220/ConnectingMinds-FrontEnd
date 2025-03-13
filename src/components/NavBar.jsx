@@ -21,23 +21,19 @@ import { useState } from "react";
 
 const NavBar = () => {
   const reduxUser = useSelector((store) => store.user);
-  // Use reduxUser directly; no need for separate local state.
+  console.log("Redux User:", reduxUser); // ✅ Add this to verify
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     try {
       setLoggingOut(true);
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-
-      // No need to manually delete the cookie, backend will handle it
       dispatch(removeUser());
-
       setTimeout(() => {
         navigate("/login");
       }, 1000);
@@ -64,7 +60,6 @@ const NavBar = () => {
   return (
     <div className="sticky top-0 z-50">
       <div className="navbar bg-base-300 text-white shadow-lg h-24 flex flex-wrap">
-        {/* Left section: Brand Image + (optional) Welcome + Hamburger */}
         <div className="flex-1 flex items-center justify-between">
           <div className="flex items-center h-full">
             <Link to="/feed" className="btn btn-ghost h-full flex items-center">
@@ -88,7 +83,6 @@ const NavBar = () => {
           </button>
         </div>
 
-        {/* Right section: nav links (desktop) or stacked (mobile) */}
         <div
           className={`${
             isMobileMenuOpen ? "block" : "hidden"
@@ -96,7 +90,6 @@ const NavBar = () => {
         >
           {reduxUser && (
             <>
-              {/* Projects Dropdown */}
               <div className="relative inline-block">
                 <button
                   onClick={() => toggleDropdown("projects")}
@@ -131,7 +124,6 @@ const NavBar = () => {
                 )}
               </div>
 
-              {/* Connections Dropdown */}
               <div className="relative inline-block">
                 <button
                   onClick={() => toggleDropdown("connections")}

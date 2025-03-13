@@ -47,7 +47,7 @@ const Body = () => {
     return <div>Loading...</div>;
   }
 
-  // Optionally hide the footer on specific pages
+  
   const hideFooter = ["/login", "/signup"].some((path) =>
     location.pathname.startsWith(path)
   );
@@ -68,3 +68,4 @@ const Body = () => {
 };
 
 export default Body;
+
