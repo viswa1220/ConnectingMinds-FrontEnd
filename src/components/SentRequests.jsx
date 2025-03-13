@@ -22,12 +22,9 @@ const SentRequests = () => {
   const loggedInUser = useSelector((state) => state.user);
   const loggedInUserId = loggedInUser?._id;
 
-  // Early return if user info isn't available yet
-  if (!loggedInUserId) {
-    return <div className="text-center text-gray-400">Loading user info...</div>;
-  }
-
   useEffect(() => {
+    if (!loggedInUserId) return; // ✅ Fix: Condition inside useEffect
+
     const fetchSentRequests = async () => {
       setLoading(true);
       try {
@@ -35,17 +32,11 @@ const SentRequests = () => {
           withCredentials: true,
         });
         console.log("All sent requests:", res.data.data);
-        // Filter to only those requests sent by the logged-in user (compare as strings)
-        const filtered = res.data.data.filter(
-          (req) =>
-            req.fromUserId._id.toString() === loggedInUserId.toString()
-        );
-        console.log("Filtered sent requests:", filtered);
-        setSentRequests(filtered);
+        setSentRequests(res.data.data.filter(
+          (req) => req.fromUserId._id.toString() === loggedInUserId.toString()
+        ));
       } catch (err) {
-        setError(
-          err.response?.data?.message || "Failed to fetch sent requests."
-        );
+        setError(err.response?.data?.message || "Failed to fetch sent requests.");
       } finally {
         setLoading(false);
       }
@@ -119,26 +110,8 @@ const SentRequests = () => {
         {filteredRequests.length > 0 ? (
           filteredRequests.map((request) => {
             const user = request.toUserId;
-            // Convert skills/interests to arrays (handle both string/array)
-            let skillsArray = Array.isArray(user.skills)
-              ? user.skills
-              : typeof user.skills === "string"
-              ? user.skills.split(",")
-              : [];
-            skillsArray = skillsArray.map((s) => s.trim()).filter((s) => s);
-
-            let interestsArray = Array.isArray(user.interests)
-              ? user.interests
-              : typeof user.interests === "string"
-              ? user.interests.split(",")
-              : [];
-            interestsArray = interestsArray.map((i) => i.trim()).filter((i) => i);
-
             return (
-              <div
-                key={request._id}
-                className="p-4 bg-gradient-to-b from-gray-800 to-gray-700 rounded-lg shadow-lg"
-              >
+              <div key={request._id} className="p-4 bg-gray-800 rounded-lg shadow-lg">
                 <div className="flex items-center mb-4">
                   <img
                     src={user.photoUrl || "https://via.placeholder.com/50"}
@@ -153,27 +126,6 @@ const SentRequests = () => {
                       Joined: {dayjs(user.createdAt).format("DD MMM YYYY")}
                     </p>
                   </div>
-                </div>
-
-                {/* Skills */}
-                <div className="mb-2">
-                  <h4 className="text-sm font-bold text-green-300 mb-1">Skills</h4>
-                  {skillsArray.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {skillsArray.map((skill, index) => (
-                        <button
-                          key={index}
-                          className="flex items-center bg-green-600 hover:bg-green-500 transition text-xs px-3 py-1 rounded-full"
-                          disabled
-                        >
-                          <FiStar className="inline mr-1" />
-                          {skill}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400">No skills provided.</p>
-                  )}
                 </div>
 
                 {/* Sent Date */}
