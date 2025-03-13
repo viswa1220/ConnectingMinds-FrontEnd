@@ -24,30 +24,16 @@ const ReceivedRequests = () => {
   const loggedInUser = useSelector((state) => state.user);
   const loggedInUserId = loggedInUser?._id;
 
-  // Fetch received connection requests
+  // Fetch received connection requests from the new endpoint
   useEffect(() => {
     const fetchReceivedRequests = async () => {
       setLoading(true);
       try {
-        // 🐞 Try both endpoints
-        const res = await axios
-          .get(`${BASE_URL}/api/people/requests`, {
-            withCredentials: true,
-          })
-          .catch(async () => {
-            // 🐞 Fallback if /api fails
-            return await axios.get(`${BASE_URL}/people/requests`, {
-              withCredentials: true,
-            });
-          });
-
-        // Filter requests received by the logged-in user with status = pending
-        const filteredRequests = res.data.data.filter((req) => {
-          return req.toUserId._id.toString() === loggedInUserId && req.status === "pending";
-        });
-        
-
-        setReceivedRequests(filteredRequests);
+        const res = await axios.get(
+          `${BASE_URL}/api/people/requests/received`,
+          { withCredentials: true }
+        );
+        setReceivedRequests(res.data.data);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch requests.");
       } finally {
@@ -63,20 +49,11 @@ const ReceivedRequests = () => {
   // Handle Accept Request
   const handleAccept = async (requestId) => {
     try {
-      await axios
-        .post(
-          `${BASE_URL}/api/people/request/review/accepted/${requestId}`,
-          {},
-          { withCredentials: true }
-        )
-        .catch(async () => {
-          // 🐞 Fallback if /api fails
-          await axios.post(
-            `${BASE_URL}/people/request/review/accepted/${requestId}`,
-            {},
-            { withCredentials: true }
-          );
-        });
+      await axios.post(
+        `${BASE_URL}/api/people/request/review/accepted/${requestId}`,
+        {},
+        { withCredentials: true }
+      );
       setReceivedRequests((prev) =>
         prev.filter((req) => req._id !== requestId)
       );
@@ -88,20 +65,11 @@ const ReceivedRequests = () => {
   // Handle Reject Request
   const handleReject = async (requestId) => {
     try {
-      await axios
-        .post(
-          `${BASE_URL}/api/people/request/review/rejected/${requestId}`,
-          {},
-          { withCredentials: true }
-        )
-        .catch(async () => {
-          // 🐞 Fallback if /api fails
-          await axios.post(
-            `${BASE_URL}/people/request/review/rejected/${requestId}`,
-            {},
-            { withCredentials: true }
-          );
-        });
+      await axios.post(
+        `${BASE_URL}/api/people/request/review/rejected/${requestId}`,
+        {},
+        { withCredentials: true }
+      );
       setReceivedRequests((prev) =>
         prev.filter((req) => req._id !== requestId)
       );
