@@ -27,7 +27,7 @@ const FeedPage = () => {
     setLoadingProjects(true);
     try {
       const res = await axios.get(`${BASE_URL}/api/projects/feed`, {
-        withCredentials: true, // ✅ Ensures cookies are sent
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },

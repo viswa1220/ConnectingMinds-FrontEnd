@@ -38,12 +38,7 @@ const Body = () => {
   };
 
   useEffect(() => {
-    // Allow public routes (/login, /signup) to be accessed without redirection
-    const publicPaths = ["/login", "/signup"];
-    if (!userData && !publicPaths.includes(location.pathname)) {
-      navigate("/login");
-      setLoading(false);
-    } else if (userData) {
+    if (userData) {
       fetchUser();
     } else {
       setLoading(false);
@@ -54,7 +49,6 @@ const Body = () => {
     return <div className="text-center text-gray-400">Loading...</div>;
   }
 
-  // Hide the footer on specific routes if desired
   const hideFooter = ["/login", "/signup"].some((path) =>
     location.pathname.startsWith(path)
   );
@@ -66,7 +60,7 @@ const Body = () => {
         <Outlet />
       </div>
       {!hideFooter && (
-        <div className="mt-4">
+        <div className="mt-2 mx-auto p-4">
           <Footer />
         </div>
       )}

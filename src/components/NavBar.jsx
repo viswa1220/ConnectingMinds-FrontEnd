@@ -193,7 +193,7 @@ const NavBar = () => {
                     Profile
                   </Link>
                 </li>
-                <li>
+             
                   <li>
                     <button
                       onClick={handleLogout}
@@ -209,7 +209,7 @@ const NavBar = () => {
                       )}
                     </button>
                   </li>
-                </li>
+               
               </ul>
             </div>
           )}
