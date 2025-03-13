@@ -35,6 +35,7 @@ export default function App() {
               <Route path="/people-feed" element={<PeopleFeedPage />} />
               <Route path="/project-feed" element={<ProjectFeedPage />} />
               <Route path="/feed" element={<FeedPage />} />
+              <Route path="/" element={<FeedPage />} />
               <Route path="/my-projects" element={<MyProjects />} />
               <Route
                 path="/my-working-projects"
