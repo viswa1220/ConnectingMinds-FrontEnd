@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { useNavigate, Link } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 
 const Login = () => {
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -14,36 +13,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // ✅ Fetch user on mount to ensure correct authentication state
-  useEffect(() => {
-    if (!user) { // ✅ Only fetch if user is null
-      const checkAuthStatus = async () => {
-        try {
-          const res = await axios.get(`${BASE_URL}/profile/view`, {
-            withCredentials: true,
-            headers: { "Cache-Control": "no-cache" }, // Ensure fresh request
-          });
-  
-          if (res.data && res.data._id) {
-            dispatch(addUser(res.data)); // ✅ Update Redux with user session
-          }
-        } catch (err) {
-          console.log("User is not logged in.");
-        }
-      };
-  
-      checkAuthStatus();
-    }
-  }, [dispatch, user]); // ✅ Runs only when `user` is null
-  
-
-  // ✅ Redirect logged-in users to /feed
-  useEffect(() => {
-    if (user) {
-      navigate("/feed");
-    }
-  }, [user, navigate]);
 
   // ✅ Handle Login
   const handleLogin = async () => {
