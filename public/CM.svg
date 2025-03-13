@@ -1,0 +1,24 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="120"
+  height="120"
+  viewBox="0 0 120 120"
+>
+  <title>Connecting Minds Icon (Dark)</title>
+  
+  <!-- Optional Background for contrast -->
+  <rect width="120" height="120" fill="#1a1a1a" />
+
+  <!-- Left Head -->
+  <circle cx="40" cy="40" r="15" fill="#2C3E50" stroke="#f0f0f0" stroke-width="2" />
+  
+  <!-- Right Head -->
+  <circle cx="80" cy="40" r="15" fill="#2C3E50" stroke="#f0f0f0" stroke-width="2" />
+  
+  <!-- Central Node -->
+  <circle cx="60" cy="70" r="10" fill="#2C3E50" stroke="#f0f0f0" stroke-width="2" />
+
+  <!-- Connecting Lines -->
+  <line x1="40" y1="40" x2="60" y2="70" stroke="#f0f0f0" stroke-width="2" />
+  <line x1="80" y1="40" x2="60" y2="70" stroke="#f0f0f0" stroke-width="2" />
+</svg>

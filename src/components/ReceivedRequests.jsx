@@ -126,7 +126,7 @@ const ReceivedRequests = () => {
       <h2 className="text-4xl font-bold mb-8 text-center text-blue-400">
         Received Requests
       </h2>
-      <Link to="/" className="text-blue-400 mb-4 inline-block">
+      <Link to="/feed" className="text-blue-400 mb-4 inline-block">
         <FiArrowLeft className="inline mr-2" /> Back to Project
       </Link>
 

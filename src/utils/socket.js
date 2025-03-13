@@ -1,10 +1,7 @@
 import { io } from "socket.io-client";
 
-// Replace with your backend URL
-const SOCKET_URL = "http://localhost:3000";
 
-const socket = io(SOCKET_URL, {
-  withCredentials: true,
-});
+const socket = io(import.meta.env.VITE_BASE_URL, { withCredentials: true });
+
 
 export default socket;

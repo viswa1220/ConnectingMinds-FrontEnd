@@ -32,7 +32,7 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/people-feed" element={<PeopleFeedPage />} />
             <Route path="/project-feed" element={<ProjectFeedPage />} />
-            <Route path="/" element={<FeedPage />} />
+            <Route path="/feed" element={<FeedPage />} />
             <Route path="/my-projects" element={<MyProjects />} />
             <Route path="/my-working-projects" element={<MyWorkingProjects />} /> 
             <Route path="/error" element={<ErrorPage />} />

@@ -44,10 +44,10 @@ const Signup = () => {
           })
           .catch((err) => {
             alert("Failed to logout. Please try again.");
-            navigate("/");
+            navigate("/feed");
           });
       } else {
-        navigate("/");
+        navigate("/feed");
       }
     }
   }, [user, dispatch, navigate]);

@@ -23,7 +23,7 @@ const Login = () => {
         { withCredentials: true }
       );
       dispatch(addUser({ ...res.data, token: res.data.token }));
-      navigate("/");
+      navigate("/feed");
     } catch (err) {
       setError(err?.response?.data || "Something went wrong");
     }
@@ -45,7 +45,7 @@ const Login = () => {
 
   const handleCancelLogout = () => {
     setShowLogoutModal(false);
-    navigate("/");
+    navigate("/feed");
   };
 
   if (user) {

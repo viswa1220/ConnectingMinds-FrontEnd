@@ -77,7 +77,7 @@ const UnconnectedPeopleFeed = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-        <Link to="/" className="text-blue-400 mb-4 inline-block">
+        <Link to="/feed" className="text-blue-400 mb-4 inline-block">
         <FiArrowLeft className="inline mr-2" /> Back to feed
       </Link>
       <h2 className="text-4xl font-bold mb-8 text-center text-blue-400">

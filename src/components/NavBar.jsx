@@ -57,7 +57,7 @@ const NavBar = () => {
     {/* Left section: Brand Image + (optional) Welcome + Hamburger */}
     <div className="flex-1 flex items-center justify-between">
       <div className="flex items-center h-full">
-        <Link to="/" className="btn btn-ghost h-full flex items-center">
+        <Link to="/feed" className="btn btn-ghost h-full flex items-center">
           {/* Larger logo height */}
           <img
             src="/ConnectingMinds.png"

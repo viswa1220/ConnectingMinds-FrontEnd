@@ -118,7 +118,7 @@ const MyConnections = () => {
     <div className="min-h-screen bg-gray-900 text-white p-6">
       {/* Header with Back Link */}
       <div className="mb-6">
-        <Link to="/" className="text-blue-400 inline-flex items-center">
+        <Link to="/feed" className="text-blue-400 inline-flex items-center">
           <FiArrowLeft className="mr-1" /> Back to Project Feed
         </Link>
       </div>

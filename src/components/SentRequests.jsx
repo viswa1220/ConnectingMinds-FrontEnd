@@ -61,7 +61,7 @@ const SentRequests = () => {
       <h2 className="text-4xl font-bold mb-8 text-center text-blue-400">
         Sent Requests
       </h2>
-      <Link to="/" className="text-blue-400 mb-4 inline-flex items-center">
+      <Link to="/feed" className="text-blue-400 mb-4 inline-flex items-center">
         <FiArrowLeft className="mr-2" /> Back to feed
       </Link>
 
