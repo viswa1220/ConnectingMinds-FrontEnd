@@ -55,65 +55,88 @@ const EditProjectModal = ({ isOpen, onClose, project, onUpdate }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-gray-800 p-6 rounded-lg max-w-lg w-full relative text-white">
+    <div className="bg-white p-6 rounded-lg max-w-lg w-full relative text-[#4B4896] shadow-lg">
+      {/* Close Button */}
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition"
+        onClick={onClose}
+      >
+        <FiX size={24} />
+      </button>
+  
+      {/* Title */}
+      <h3 className="text-2xl font-bold mb-4 text-[#4B4896]">Edit Project</h3>
+  
+      {/* Error Message */}
+      {error && <p className="text-red-500 mb-2">{error}</p>}
+  
+      {/* Form */}
+      <form onSubmit={handleSubmit}>
+        {/* Title Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Title
+          </label>
+          <input
+            type="text"
+            className="w-full p-2 rounded-md border border-gray-300 bg-gray-200 text-gray-800 focus:ring-2 focus:ring-[#4B4896]"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
+  
+        {/* Description Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Description
+          </label>
+          <textarea
+            className="w-full p-2 rounded-md border border-gray-300 bg-gray-200 text-gray-800 focus:ring-2 focus:ring-[#4B4896]"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </div>
+  
+        {/* Skills Required Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Skills Required (comma-separated)
+          </label>
+          <input
+            type="text"
+            className="w-full p-2 rounded-md border border-gray-300 bg-gray-200 text-gray-800 focus:ring-2 focus:ring-[#4B4896]"
+            value={skillsRequired}
+            onChange={(e) => setSkillsRequired(e.target.value)}
+          />
+        </div>
+  
+        {/* Interests Tags Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Interests Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            className="w-full p-2 rounded-md border border-gray-300 bg-gray-200 text-gray-800 focus:ring-2 focus:ring-[#4B4896]"
+            value={interestsTags}
+            onChange={(e) => setInterestsTags(e.target.value)}
+          />
+        </div>
+  
+        {/* Submit Button */}
         <button
-          className="absolute top-4 right-4 text-white hover:text-red-400"
-          onClick={onClose}
+          type="submit"
+          className="w-full p-2 rounded-md bg-[#10B981] text-white hover:bg-[#0F9A75] transition font-semibold"
+          disabled={loading}
         >
-          <FiX size={24} />
+          {loading ? "Updating..." : "Update Project"}
         </button>
-        <h3 className="text-2xl font-bold mb-4 text-blue-400">
-          Edit Project
-        </h3>
-        {error && <p className="text-red-500 mb-2">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm mb-1">Title</label>
-            <input
-              type="text"
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm mb-1">Description</label>
-            <textarea
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm mb-1">Skills Required (comma-separated)</label>
-            <input
-              type="text"
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              value={skillsRequired}
-              onChange={(e) => setSkillsRequired(e.target.value)}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm mb-1">Interests Tags (comma-separated)</label>
-            <input
-              type="text"
-              className="w-full p-2 rounded bg-gray-700 text-white"
-              value={interestsTags}
-              onChange={(e) => setInterestsTags(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full p-2 rounded bg-blue-600 hover:bg-blue-500 transition"
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update Project"}
-          </button>
-        </form>
-      </div>
+      </form>
     </div>
+  </div>
+  
   );
 };
 

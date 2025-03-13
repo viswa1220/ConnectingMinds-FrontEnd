@@ -18,14 +18,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import ProjectUsersModal from "./ProjectChatModal";
 import { useSelector } from "react-redux";
-
+import { getSkillColor } from "../utils/skillColors";
 const MyProjects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
-  const [selectedProjectAnalytics, setSelectedProjectAnalytics] = useState(null);
+  const [selectedProjectAnalytics, setSelectedProjectAnalytics] =
+    useState(null);
   const [showUsersModal, setShowUsersModal] = useState(false);
   const [selectedProjectUsers, setSelectedProjectUsers] = useState([]);
   const [selectedProjectTitle, setSelectedProjectTitle] = useState("");
@@ -77,14 +78,23 @@ const MyProjects = () => {
         `${BASE_URL}/api/project/create`,
         {
           ...newProject,
-          skillsRequired: newProject.skillsRequired.split(",").map((skill) => skill.trim()),
-          interestsTags: newProject.interestsTags.split(",").map((tag) => tag.trim()),
+          skillsRequired: newProject.skillsRequired
+            .split(",")
+            .map((skill) => skill.trim()),
+          interestsTags: newProject.interestsTags
+            .split(",")
+            .map((tag) => tag.trim()),
         },
         { withCredentials: true }
       );
       alert("Project created successfully!");
       setShowCreateModal(false);
-      setNewProject({ title: "", description: "", skillsRequired: "", interestsTags: "" });
+      setNewProject({
+        title: "",
+        description: "",
+        skillsRequired: "",
+        interestsTags: "",
+      });
       setProjects((prevProjects) => [res.data.project, ...prevProjects]);
     } catch (err) {
       console.error("Failed to create project:", err);
@@ -118,9 +128,12 @@ const MyProjects = () => {
   // Fetch analytics for a project
   const fetchAnalytics = async (projectId) => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/project/${projectId}/analytics`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${BASE_URL}/api/project/${projectId}/analytics`,
+        {
+          withCredentials: true,
+        }
+      );
       setSelectedProjectAnalytics(res.data.data);
       setShowAnalyticsModal(true);
     } catch (err) {
@@ -131,9 +144,12 @@ const MyProjects = () => {
   // Fetch project users
   const fetchProjectUsers = async (projectId, projectTitle) => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/project/${projectId}/users`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${BASE_URL}/api/project/${projectId}/users`,
+        {
+          withCredentials: true,
+        }
+      );
       setSelectedProjectUsers(res.data.data);
       setSelectedProjectTitle(projectTitle);
       setShowUsersModal(true);
@@ -148,21 +164,30 @@ const MyProjects = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6 relative">
-      <h2 className="text-4xl font-bold mb-8 text-center text-blue-400">My Projects</h2>
-      <button
-        className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-500 transition my-2"
-        onClick={() => setShowCreateModal(true)}
-      >
-        <FiPlus />
-        Add Project
-      </button>
+    <div className="min-h-screen bg-[#8F8AC3] p-10 text-white">
+      {/* Page Title */}
+      <h2 className="text-4xl font-bold text-center text-white mb-8">
+        My Projects
+      </h2>
+
+      {/* Add Project Button */}
+      <div className=" justify-center mb-6">
+        <button
+          className="flex items-center gap-2 bg-[#4B4896] px-5 py-3 rounded-xl hover:bg-[#3A3778] transition shadow-lg"
+          onClick={() => setShowCreateModal(true)}
+        >
+          <FiPlus size={18} />
+          Add Project
+        </button>
+      </div>
+
+      {/* Handle Loading & Errors */}
       {loading ? (
-        <p className="text-center text-gray-400">Loading projects...</p>
+        <p className="text-center text-gray-300">Loading projects...</p>
       ) : error ? (
         <p className="text-center text-red-500">{error}</p>
       ) : projects.length === 0 ? (
-        <p className="text-center text-gray-400">You have no projects yet.</p>
+        <p className="text-center text-gray-300">You have no projects yet.</p>
       ) : (
         <motion.div
           className="overflow-hidden"
@@ -171,82 +196,117 @@ const MyProjects = () => {
           transition={{ duration: 0.5 }}
         >
           <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 mx-auto" // Matched Feed Page spacing
             drag="x"
-            dragConstraints={{ right: 0, left: -((projects.length - 1) * 320) }}
+            dragConstraints={{ right: 0, left: -((projects.length - 1) * 320) }} // Ensures smooth scrolling
             whileTap={{ cursor: "grabbing" }}
           >
             {projects.map((proj) => (
               <motion.div
                 key={proj._id}
-                className="rounded-xl shadow-lg p-6 bg-gradient-to-b from-gray-800 to-gray-700 text-white hover:scale-105 transition-transform"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
+                className="rounded-xl shadow-lg p-5 bg-white text-[#4B4896] hover:shadow-2xl transition-all w-[350px]" // Wider cards to match Feed
+                whileHover={{ scale: 1.03 }}
               >
-                <h3 className="text-2xl font-bold mb-2 truncate text-yellow-400">
+                {/* Project Title */}
+                <h3 className="text-xl font-semibold mb-2 truncate text-[#4B4896]">
                   {proj.title || "Untitled Project"}
                 </h3>
-                <p className="text-sm text-gray-400 mb-2">
-                  Created on: <span className="text-gray-300">{dayjs(proj.createdAt).format("MMM DD, YYYY")}</span>
+
+                {/* Created Date */}
+                <p className="text-sm text-gray-600 mb-1">
+                  Created on:{" "}
+                  <span className="text-gray-700">
+                    {dayjs(proj.createdAt).format("MMM DD, YYYY")}
+                  </span>
                 </p>
-                <p className="text-md mb-4 text-gray-300 line-clamp-3">
+
+                {/* Project Description */}
+                <p className="text-sm mb-3 text-gray-600 line-clamp-2">
                   {proj.description || "No description available."}
                 </p>
-                <div className="mb-4">
-                  <h4 className="text-sm text-blue-300 mb-1">Skills Learned:</h4>
-                  <ul className="flex flex-wrap gap-1">
+
+                {/* Skills Section */}
+                <div className="mb-3">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                    Tech Stack:
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
                     {proj.skillsRequired?.slice(0, 3).map((skill, index) => (
-                      <li key={index} className="text-xs bg-blue-700 px-2 py-1 rounded-full">
+                      <span
+                        key={index}
+                        className={`px-2 py-1 rounded-md text-xs font-medium shadow-md ${getSkillColor(
+                          skill
+                        )}`}
+                      >
                         {skill}
-                      </li>
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 </div>
-                <div className="mb-4">
-                  <h4 className="text-sm text-blue-300 mb-1">Tags:</h4>
-                  <ul className="flex flex-wrap gap-1">
+
+                {/* Tags Section */}
+                <div className="mb-3">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                    Tags:
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
                     {proj.interestsTags?.slice(0, 3).map((tag, index) => (
-                      <li key={index} className="text-xs bg-green-700 px-2 py-1 rounded-full">
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-xs bg-indigo-300 text-indigo-900 rounded-full shadow-md"
+                      >
                         {tag}
-                      </li>
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-400 mb-2">
-                  Collaborators: <span className="text-gray-300">{proj.collaborators?.length || 0}</span>
+
+                {/* Collaborators */}
+                <p className="text-sm text-gray-700 mb-3">
+                  <strong>Collaborators:</strong>{" "}
+                  {proj.collaborators?.length || 0}
                 </p>
-                {/* Action Icons Section */}
-                <div className="flex justify-between items-center mt-4">
+
+                {/* Action Buttons (Larger Icons, Better Spacing) */}
+                <div className="flex justify-between items-center mt-3 space-x-2">
                   <button
                     onClick={() => handleToggleStatus(proj)}
+                    className="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition shadow-md"
                     title={proj.status === "open" ? "Mark Closed" : "Mark Open"}
-                    className="p-2 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white transition"
                   >
-                    {proj.status === "open" ? <FiLock size={20} /> : <FiUnlock size={20} />}
+                    {proj.status === "open" ? (
+                      <FiLock size={20} />
+                    ) : (
+                      <FiUnlock size={20} />
+                    )}
                   </button>
+
                   <button
-                    className="p-2 rounded-full bg-green-600 hover:bg-green-500 text-white transition"
+                    className="p-2 rounded-lg bg-green-600 hover:bg-green-500 text-white transition shadow-md"
                     onClick={() => fetchAnalytics(proj._id)}
                     title="View Analytics"
                   >
                     <FiBarChart2 size={20} />
                   </button>
+
                   <button
-                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white transition"
+                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition shadow-md"
                     onClick={() => fetchProjectUsers(proj._id, proj.title)}
                     title="View Users"
                   >
                     <FiUsers size={20} />
                   </button>
+
                   <button
-                    className="p-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white transition"
+                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition shadow-md"
                     onClick={() => handleEdit(proj)}
                     title="Edit Project"
                   >
                     <FiEdit3 size={20} />
                   </button>
+
                   <button
-                    className="p-2 rounded-full bg-yellow-600 hover:bg-yellow-500 text-white transition"
+                    className="p-2 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white transition shadow-md"
                     onClick={() => handleTaskManagement(proj._id)}
                     title="Manage Tasks"
                   >
@@ -258,7 +318,6 @@ const MyProjects = () => {
           </motion.div>
         </motion.div>
       )}
-
       {/* Analytics Modal */}
       <AnimatePresence>
         {showAnalyticsModal && selectedProjectAnalytics && (
@@ -269,31 +328,48 @@ const MyProjects = () => {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-gray-800 p-6 rounded-lg max-w-lg w-full relative text-white"
+              className="bg-white p-6 rounded-lg max-w-lg w-full relative text-[#4B4896] shadow-lg"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
             >
+              {/* Close Button */}
               <button
-                className="absolute top-4 right-4 text-white hover:text-red-400"
+                className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition"
                 onClick={() => setShowAnalyticsModal(false)}
               >
                 <FiX size={24} />
               </button>
-              <h3 className="text-2xl font-bold mb-4 text-blue-400">
+
+              {/* Title */}
+              <h3 className="text-2xl font-bold mb-4 text-[#4B4896]">
                 Project Analytics
               </h3>
-              <p>
-                <strong>Total Requests:</strong> {selectedProjectAnalytics.totalRequests}
+
+              {/* Analytics Details */}
+              <p className="text-lg font-semibold text-gray-800">
+                <strong>Total Requests:</strong>{" "}
+                <span className="text-gray-600">
+                  {selectedProjectAnalytics.totalRequests}
+                </span>
               </p>
-              <p>
-                <strong>Pending Requests:</strong> {selectedProjectAnalytics.pendingRequests}
+              <p className="text-lg font-semibold text-gray-800">
+                <strong>Pending Requests:</strong>{" "}
+                <span className="text-yellow-600">
+                  {selectedProjectAnalytics.pendingRequests}
+                </span>
               </p>
-              <p>
-                <strong>Accepted Collaborators:</strong> {selectedProjectAnalytics.acceptedCollaborators}
+              <p className="text-lg font-semibold text-gray-800">
+                <strong>Accepted Collaborators:</strong>{" "}
+                <span className="text-green-600">
+                  {selectedProjectAnalytics.acceptedCollaborators}
+                </span>
               </p>
-              <p>
-                <strong>Top Skills:</strong> {selectedProjectAnalytics.mostCommonSkills.join(", ")}
+              <p className="text-lg font-semibold text-gray-800">
+                <strong>Top Skills:</strong>{" "}
+                <span className="text-[#4B4896]">
+                  {selectedProjectAnalytics.mostCommonSkills.join(", ")}
+                </span>
               </p>
             </motion.div>
           </motion.div>
@@ -317,29 +393,36 @@ const MyProjects = () => {
       <AnimatePresence>
         {showCreateModal && (
           <motion.div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-            <div className="bg-gray-800 p-6 rounded-lg max-w-lg w-full text-white">
-              <h2 className="text-2xl font-bold mb-4">Create Project</h2>
+            <div className="bg-white p-6 rounded-lg max-w-lg w-full text-[#4B4896] shadow-lg">
+              {/* Title */}
+              <h2 className="text-2xl font-bold mb-4 text-[#4B4896]">
+                Create Project
+              </h2>
+
+              {/* Input Fields */}
               <input
                 type="text"
                 placeholder="Title"
-                className="w-full mb-4 p-2 bg-gray-700 rounded"
+                className="w-full mb-4 p-2 bg-gray-200 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4B4896]"
                 value={newProject.title}
                 onChange={(e) =>
                   setNewProject({ ...newProject, title: e.target.value })
                 }
               />
+
               <textarea
                 placeholder="Description"
-                className="w-full mb-4 p-2 bg-gray-700 rounded"
+                className="w-full mb-4 p-2 bg-gray-200 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4B4896]"
                 value={newProject.description}
                 onChange={(e) =>
                   setNewProject({ ...newProject, description: e.target.value })
                 }
               />
+
               <input
                 type="text"
                 placeholder="Skills you will learn (comma separated)"
-                className="w-full mb-4 p-2 bg-gray-700 rounded"
+                className="w-full mb-4 p-2 bg-gray-200 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4B4896]"
                 value={newProject.skillsRequired}
                 onChange={(e) =>
                   setNewProject({
@@ -348,10 +431,11 @@ const MyProjects = () => {
                   })
                 }
               />
+
               <input
                 type="text"
                 placeholder="Interests Tags (comma separated)"
-                className="w-full mb-4 p-2 bg-gray-700 rounded"
+                className="w-full mb-4 p-2 bg-gray-200 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4B4896]"
                 value={newProject.interestsTags}
                 onChange={(e) =>
                   setNewProject({
@@ -360,15 +444,18 @@ const MyProjects = () => {
                   })
                 }
               />
+
+              {/* Buttons */}
               <div className="flex justify-end gap-4">
                 <button
-                  className="py-2 px-4 bg-red-500 rounded hover:bg-red-600"
+                  className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
                   onClick={() => setShowCreateModal(false)}
                 >
                   Cancel
                 </button>
+
                 <button
-                  className="py-2 px-4 bg-green-600 rounded hover:bg-green-700"
+                  className="py-2 px-4 bg-[#10B981] text-white rounded-md hover:bg-[#0F9A75] transition"
                   onClick={handleCreateProject}
                 >
                   Create Project

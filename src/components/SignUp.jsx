@@ -70,7 +70,12 @@ const Signup = () => {
   };
 
   const convertCommaSeparatedToArray = (str) =>
-    str ? str.split(",").map((s) => s.trim()).filter((s) => s) : [];
+    str
+      ? str
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s)
+      : [];
 
   // This function checks if the selected image already exists in Firebase.
   // If it does, it asks whether to use the existing image.
@@ -87,7 +92,10 @@ const Signup = () => {
       if (useExisting) {
         return existingUrl;
       } else {
-        const newFileRef = ref(storage, `profileImages/${Date.now()}_${imageFile.name}`);
+        const newFileRef = ref(
+          storage,
+          `profileImages/${Date.now()}_${imageFile.name}`
+        );
         await uploadBytes(newFileRef, imageFile);
         return await getDownloadURL(newFileRef);
       }
@@ -163,96 +171,46 @@ const Signup = () => {
 
   // Render signup form if no user is logged in.
   return (
-    <div className="flex justify-center items-center mt-8 bg-base-100 text-white">
-      <div className="bg-neutral shadow-lg rounded-md w-full max-w-lg p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center text-primary">Sign Up</h2>
-        <p className="text-center mb-4">
+    <div className="flex justify-center items-center min-h-screen bg-[#8F8AC3] text-white px-4">
+      <div className="bg-white text-[#4B4896] shadow-lg rounded-lg w-full max-w-lg p-6">
+        <h2 className="text-3xl font-bold mb-6 text-center">Sign Up</h2>
+        <p className="text-center mb-4 text-gray-600">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-400 hover:underline">
+          <Link to="/login" className="text-[#4B4896] hover:underline">
             Login
           </Link>
         </p>
 
+        {/* Step 1 */}
         {step === 1 && (
           <div>
-            <label className="block mb-1 text-sm font-medium">
-              First Name
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              placeholder="Enter your first name"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.firstName}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, firstName: e.target.value }))
-              }
-              required
-            />
-
-            <label className="block mb-1 text-sm font-medium">
-              Last Name
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Enter your last name"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.lastName}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, lastName: e.target.value }))
-              }
-              required
-            />
-
-            <label className="block mb-1 text-sm font-medium">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="emailId"
-              placeholder="Enter your email"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.emailId}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, emailId: e.target.value }))
-              }
-              required
-            />
-
-            <label className="block mb-1 text-sm font-medium">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, password: e.target.value }))
-              }
-              required
-            />
-
-            <label className="block mb-1 text-sm font-medium">
-              Age
-            </label>
-            <input
-              type="number"
-              name="age"
-              placeholder="Enter your age"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.age}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, age: e.target.value }))
-              }
-              required
-            />
-
-            {error && <p className="text-error text-center mb-4">{error}</p>}
+            {[
+              { label: "First Name", name: "firstName", type: "text" },
+              { label: "Last Name", name: "lastName", type: "text" },
+              { label: "Email Address", name: "emailId", type: "email" },
+              { label: "Password", name: "password", type: "password" },
+              { label: "Age", name: "age", type: "number" },
+            ].map(({ label, name, type }) => (
+              <div key={name} className="mb-4">
+                <label className="block mb-1 text-sm font-medium text-gray-700">
+                  {label}
+                </label>
+                <input
+                  type={type}
+                  name={name}
+                  placeholder={`Enter your ${label.toLowerCase()}`}
+                  className="w-full p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:border-[#4B4896]"
+                  value={formData[name]}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, [name]: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+            ))}
+            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             <button
-              className="btn btn-primary w-full"
+              className="w-full py-2 bg-[#4B4896] text-white rounded-md hover:bg-[#3A3778] transition"
               onClick={handleNext}
               disabled={loading}
             >
@@ -261,120 +219,125 @@ const Signup = () => {
           </div>
         )}
 
+        {/* Step 2 */}
         {step === 2 && (
           <div>
-            <label className="block mb-1 text-sm font-medium">
-              Gender
-            </label>
-            <select
-              name="gender"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.gender}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, gender: e.target.value }))
-              }
-              required
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="others">Others</option>
-            </select>
+            {/* Gender Selection */}
+            <div className="mb-4">
+              <label className="block mb-1 text-sm font-medium text-gray-700">
+                Gender
+              </label>
+              <select
+                name="gender"
+                className="w-full p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:border-[#4B4896]"
+                value={formData.gender}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, gender: e.target.value }))
+                }
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="others">Others</option>
+              </select>
+            </div>
 
-            <label className="block mb-1 text-sm font-medium">
-              Upload Profile Picture
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="mb-4"
-            />
+            {/* Profile Picture */}
+            <div className="mb-4">
+              <label className="block mb-1 text-sm font-medium text-gray-700">
+                Upload Profile Picture
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full text-gray-800"
+              />
+            </div>
 
-            <label className="block mb-1 text-sm font-medium">
-              About You
-            </label>
-            <textarea
-              name="about"
-              placeholder="Tell us about yourself"
-              className="textarea textarea-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.about}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, about: e.target.value }))
-              }
-              required
-            ></textarea>
+            {[
+              {
+                label: "About You",
+                name: "about",
+                type: "textarea",
+                placeholder: "Tell us about yourself",
+              },
+              {
+                label: "Experience (in years)",
+                name: "experience",
+                type: "text",
+                placeholder: "Enter your experience",
+              },
+              {
+                label: "Tech Stack (comma separated)",
+                name: "techStack",
+                type: "text",
+                placeholder: "e.g., React, Node.js, MongoDB",
+              },
+              {
+                label: "Skills (comma separated)",
+                name: "skills",
+                type: "text",
+                placeholder: "e.g., Problem Solving, Communication",
+              },
+              {
+                label: "Interests (comma separated)",
+                name: "interests",
+                type: "text",
+                placeholder: "e.g., Music, Sports, Coding",
+              },
+            ].map(({ label, name, type, placeholder }) => (
+              <div key={name} className="mb-4">
+                <label className="block mb-1 text-sm font-medium text-gray-700">
+                  {label}
+                </label>
+                {type === "textarea" ? (
+                  <textarea
+                    name={name}
+                    placeholder={placeholder}
+                    className="w-full p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:border-[#4B4896]"
+                    value={formData[name]}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        [name]: e.target.value,
+                      }))
+                    }
+                    required
+                  ></textarea>
+                ) : (
+                  <input
+                    type={type}
+                    name={name}
+                    placeholder={placeholder}
+                    className="w-full p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:border-[#4B4896]"
+                    value={formData[name]}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        [name]: e.target.value,
+                      }))
+                    }
+                    required
+                  />
+                )}
+              </div>
+            ))}
 
-            <label className="block mb-1 text-sm font-medium">
-              Experience (in years)
-            </label>
-            <input
-              type="text"
-              name="experience"
-              placeholder="Enter your experience"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.experience}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, experience: e.target.value }))
-              }
-              required
-            />
+            {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-            <label className="block mb-1 text-sm font-medium">
-              Tech Stack (comma separated)
-            </label>
-            <input
-              type="text"
-              name="techStack"
-              placeholder="e.g., React, Node.js, MongoDB"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.techStack}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, techStack: e.target.value }))
-              }
-              required
-            />
-
-            <label className="block mb-1 text-sm font-medium">
-              Skills (comma separated)
-            </label>
-            <input
-              type="text"
-              name="skills"
-              placeholder="e.g., Problem Solving, Communication"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.skills}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, skills: e.target.value }))
-              }
-              required
-            />
-
-            <label className="block mb-1 text-sm font-medium">
-              Interests (comma separated)
-            </label>
-            <input
-              type="text"
-              name="interests"
-              placeholder="e.g., Music, Sports, Coding"
-              className="input input-bordered w-full mb-4 bg-base-100 text-white"
-              value={formData.interests}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, interests: e.target.value }))
-              }
-              required
-            />
-
-            {error && <p className="text-error text-center mb-4">{error}</p>}
+            {/* Buttons */}
             <div className="flex justify-between">
               <button
-                className="btn btn-secondary"
+                className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
                 onClick={handleBack}
                 disabled={loading}
               >
                 Back
               </button>
               <button
-                className="btn btn-primary"
+                className="px-4 py-2 bg-[#4B4896] text-white rounded-md hover:bg-[#3A3778] transition"
                 onClick={handleSubmit}
                 disabled={loading}
               >

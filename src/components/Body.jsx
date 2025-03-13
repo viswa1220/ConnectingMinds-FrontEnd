@@ -53,13 +53,22 @@ const Body = () => {
   );
 
   return (
-    <div>
-      <div className="container mx-auto p-4">
+    <div className="min-h-screen flex flex-col">
+      {/* Wrap NavBar in the same container for consistent width */}
+      <div className="container mx-auto px-4 w-full">
         <NavBar />
-        <Outlet />
       </div>
+
+      {/* Content area with constrained width and gaps */}
+      <div className="">
+        <div className="container mx-auto px-4 w-full"> 
+          <Outlet />
+        </div>
+      </div>
+
+      {/* Footer with same container */}
       {!hideFooter && (
-        <div className="mt-4">
+        <div className="container mx-auto px-4 w-full">
           <Footer />
         </div>
       )}

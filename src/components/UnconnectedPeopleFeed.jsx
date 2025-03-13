@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
-import { FiUserPlus, FiBriefcase, FiStar, FiCalendar, FiCheckCircle, FiArrowLeft } from "react-icons/fi";
+import { motion } from "framer-motion";
+import {
+  FiUserPlus,
+  FiBriefcase,
+  FiStar,
+  FiCalendar,
+  FiCheckCircle,
+  FiArrowLeft,
+} from "react-icons/fi";
 import dayjs from "dayjs";
 import { Link } from "react-router";
+import { getSkillColor } from "../utils/skillColors";
 
 const UnconnectedPeopleFeed = () => {
   const [people, setPeople] = useState([]);
@@ -71,122 +80,172 @@ const UnconnectedPeopleFeed = () => {
     }
   };
 
-  if (loading) return <div className="text-center text-gray-400">Loading...</div>;
+  if (loading)
+    return <div className="text-center text-gray-400">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
-  if (people.length === 0) return <div className="min-h-screen text-center text-gray-400">No suggestions found.</div>;
+  if (people.length === 0)
+    return (
+      <div className="bg-[#8F8AC3] min-h-screen text-center text-gray-400">
+        No suggestions found.
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-        <Link to="/feed" className="text-blue-400 mb-4 inline-block">
-        <FiArrowLeft className="inline mr-2" /> Back to feed
-      </Link>
-      <h2 className="text-4xl font-bold mb-8 text-center text-blue-400">
-        Suggested People
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-[#8F8AC3] text-white p-10">
+      {/* Back Link */}
+      <div className="mb-6">
+        <Link
+          to="/feed"
+          className="text-white inline-flex items-center hover:underline"
+        >
+          <FiArrowLeft className="mr-2" /> Back to Feed
+        </Link>
+      </div>
+
+      <h2 className="text-4xl font-bold mb-8 text-center">Suggested People</h2>
+
+      {/* Grid Layout: 3 cards per row */}
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         {people.map((user) => (
-          <div
+          <motion.div
             key={user._id}
-            className="p-4 bg-gradient-to-b from-gray-800 to-gray-700 rounded-lg shadow-lg"
+            className="p-6 bg-white text-[#4B4896] rounded-xl shadow-lg hover:shadow-2xl transition-all border border-gray-200 relative"
+            whileHover={{ scale: 1.02 }}
           >
+            {/* Connect Button at Top Right */}
+            {connectionStatus[user._id] === "accepted" ? (
+              <span className="absolute top-3 right-3 bg-blue-600 text-xs text-white px-3 py-1 rounded-full">
+                <FiCheckCircle className="inline-block mr-1" />
+                Connected
+              </span>
+            ) : connectionStatus[user._id] === "pending" ? (
+              <span className="absolute top-3 right-3 bg-yellow-500 text-xs text-white px-3 py-1 rounded-full">
+                <FiUserPlus className="inline-block mr-1" />
+                Pending
+              </span>
+            ) : (
+              <button
+                onClick={() => sendRequest(user._id)}
+                className="absolute top-3 right-3 bg-green-600 hover:bg-green-500 p-2 rounded-full transition"
+                title="Connect"
+              >
+                <FiUserPlus className="text-white" size={18} />
+              </button>
+            )}
+
+            {/* Profile Info */}
             <div className="flex items-center mb-4">
-              <img
-                src={user.photoUrl || "https://via.placeholder.com/50"}
-                alt="Profile"
-                className="w-12 h-12 rounded-full mr-3"
-              />
-              <div>
-                <h3 className="text-xl font-bold text-yellow-400">
+              {user.photoUrl ? (
+                <img
+                  src={user.photoUrl}
+                  alt="Profile"
+                  className="w-14 h-14 rounded-full object-cover border border-gray-300 shadow-sm"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-[#4B4896]">
+                  {user.firstName[0]}
+                  {user.lastName[0]}
+                </div>
+              )}
+              <div className="ml-3">
+                <h3 className="text-lg font-bold">
                   {user.firstName} {user.lastName}
                 </h3>
-                <p className="text-sm text-gray-400">
-                  <FiBriefcase className="inline mr-1" />
+                <p className="text-sm text-gray-500">
+                  <FiBriefcase className="mr-1 inline" />{" "}
                   {user.about || "No job title available"}
                 </p>
               </div>
             </div>
 
-            <p className="text-sm text-gray-400 mb-2">
-              <FiStar className="inline mr-1" />
-              Experience: {user.experience || "Not specified"} years
+            {/* Experience & Joining Date */}
+            <p className="text-sm text-gray-600 flex items-center">
+              <FiStar className="mr-1" /> Experience:{" "}
+              {user.experience || "Not specified"} years
             </p>
-
-            <p className="text-sm text-gray-400 mb-2">
-              <FiCalendar className="inline mr-1" />
-              Joined: {dayjs(user.createdAt).format("DD MMM YYYY")}
+            <p className="text-sm text-gray-600 flex items-center mt-1">
+              <FiCalendar className="mr-1" /> Joined:{" "}
+              {dayjs(user.createdAt).format("DD MMM YYYY")}
             </p>
 
             {/* Tech Stack */}
-            <div className="mb-2">
-              <h4 className="text-sm text-blue-300 mb-1">Tech Stack:</h4>
-              <ul className="flex flex-wrap gap-1">
+            <div className="mt-3">
+              <h4 className="text-sm font-semibold text-gray-600 mb-1">
+                Tech Stack
+              </h4>
+              <div className="flex flex-wrap gap-2">
                 {user.techStack?.length > 0 ? (
                   user.techStack.map((tech, index) => (
-                    <li key={index} className="text-xs bg-green-700 px-2 py-1 rounded-full">
+                    <span
+                      key={index}
+                      className="px-3 py-1 text-xs bg-green-300 text-green-900 rounded-full"
+                    >
                       {tech}
-                    </li>
+                    </span>
                   ))
                 ) : (
-                  <li className="text-xs text-gray-400">No tech stack specified</li>
+                  <span className="text-xs text-gray-400">
+                    No tech stack specified
+                  </span>
                 )}
-              </ul>
+              </div>
             </div>
 
             {/* Skills */}
-            <div className="mb-2">
-              <h4 className="text-sm text-blue-300 mb-1">Skills:</h4>
-              <ul className="flex flex-wrap gap-1">
+            <div className="mt-3">
+              <h4 className="text-sm font-semibold text-gray-600 mb-1">
+                Skills
+              </h4>
+              <div className="flex flex-wrap gap-2">
                 {user.skills?.length > 0 ? (
                   user.skills.map((skill, index) => (
-                    <li key={index} className="text-xs bg-blue-700 px-2 py-1 rounded-full">
+                    <span
+                      key={index}
+                      className={`px-3 py-1 text-xs rounded-full ${getSkillColor(
+                        skill
+                      )}`}
+                    >
                       {skill}
-                    </li>
+                    </span>
                   ))
                 ) : (
-                  <li className="text-xs text-gray-400">No skills specified</li>
+                  <span className="text-xs text-gray-400">
+                    No skills specified
+                  </span>
                 )}
-              </ul>
+              </div>
             </div>
 
             {/* Interests */}
-            <div className="mb-2">
-              <h4 className="text-sm text-blue-300 mb-1">Interests:</h4>
-              <ul className="flex flex-wrap gap-1">
+            <div className="mt-3">
+              <h4 className="text-sm font-semibold text-gray-600 mb-1">
+                Interests
+              </h4>
+              <div className="flex flex-wrap gap-2">
                 {user.interests?.length > 0 ? (
                   user.interests.map((interest, index) => (
-                    <li key={index} className="text-xs bg-purple-700 px-2 py-1 rounded-full">
+                    <span
+                      key={index}
+                      className="px-3 py-1 text-xs bg-purple-300 text-purple-900 rounded-full"
+                    >
                       {interest}
-                    </li>
+                    </span>
                   ))
                 ) : (
-                  <li className="text-xs text-gray-400">No interests specified</li>
+                  <span className="text-xs text-gray-400">
+                    No interests specified
+                  </span>
                 )}
-              </ul>
+              </div>
             </div>
-
-            {/* Connect Button */}
-            {connectionStatus[user._id] === "accepted" ? (
-              <div className="mt-4 p-2 w-full bg-blue-600 rounded-full text-center">
-                <FiCheckCircle className="inline-block mr-2" />
-                Connected
-              </div>
-            ) : connectionStatus[user._id] === "pending" ? (
-              <div className="mt-4 p-2 w-full bg-yellow-600 rounded-full text-center">
-                <FiUserPlus className="inline-block mr-2" />
-                Pending
-              </div>
-            ) : (
-              <button
-                onClick={() => sendRequest(user._id)}
-                className="mt-4 p-2 w-full bg-green-600 hover:bg-green-500 rounded-full transition"
-              >
-                <FiUserPlus className="inline-block mr-2" />
-                Connect
-              </button>
-            )}
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 };

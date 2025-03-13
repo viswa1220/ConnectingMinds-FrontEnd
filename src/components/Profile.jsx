@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firbase";
-
+import dayjs from "dayjs";
 export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [editData, setEditData] = useState({});
@@ -85,7 +85,10 @@ export default function Profile() {
       if (useExisting) {
         return existingUrl;
       } else {
-        const newFileRef = ref(storage, `profileImages/${Date.now()}_${profileImageFile.name}`);
+        const newFileRef = ref(
+          storage,
+          `profileImages/${Date.now()}_${profileImageFile.name}`
+        );
         await uploadBytes(newFileRef, profileImageFile);
         return await getDownloadURL(newFileRef);
       }
@@ -159,29 +162,34 @@ export default function Profile() {
   }
 
   const displayData = isEditing ? editData : profile;
-  const joinedDate = profile.createdAt
-    ? new Date(profile.createdAt).toLocaleDateString()
+  const joinedDate = profile?.createdAt
+    ? dayjs(profile.createdAt).format("DD MMM YYYY")
     : "N/A";
-
   return (
-    <div className="min-h-screen bg-neutral text-white py-8 px-4 flex justify-center">
-      <div className="w-full max-w-4xl bg-base-100 text-white rounded-lg shadow-md p-6 flex flex-col gap-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold text-primary">My Profile</h1>
-          <button onClick={handleEditToggle} className="btn btn-sm btn-primary">
+    <div className=" bg-[#8F8AC3] text-white py-10 px-6 flex justify-center">
+      <div className="w-full max-w-4xl bg-white text-[#4B4896] rounded-xl shadow-lg p-6 flex flex-col gap-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">My Profile</h1>
+          <button
+            onClick={handleEditToggle}
+            className="px-4 py-2 bg-[#4B4896] text-white rounded-md hover:bg-[#3A3778] transition shadow"
+          >
             {isEditing ? "Cancel" : "Edit"}
           </button>
         </div>
+
+        {/* Profile Image & Basic Info */}
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0">
             <img
               src={displayData.photoUrl || "https://via.placeholder.com/150"}
               alt="Profile"
-              className="w-40 h-40 object-cover rounded-full border-4 border-primary"
+              className="w-40 h-40 object-cover rounded-full border-4 border-[#4B4896]"
             />
             {isEditing && (
               <div className="mt-2">
-                <label className="block text-sm mb-1 text-accent">
+                <label className="block text-sm text-gray-600 mb-1">
                   Update Profile Photo:
                 </label>
                 <input
@@ -193,188 +201,123 @@ export default function Profile() {
               </div>
             )}
           </div>
+
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm mb-1 text-accent">First Name:</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="firstName"
-                  value={editData.firstName || ""}
-                  onChange={handleInputChange}
-                  className="input input-bordered bg-base-200 text-white w-full"
-                />
-              ) : (
-                <p>{displayData.firstName || "N/A"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm mb-1 text-accent">Last Name:</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="lastName"
-                  value={editData.lastName || ""}
-                  onChange={handleInputChange}
-                  className="input input-bordered bg-base-200 text-white w-full"
-                />
-              ) : (
-                <p>{displayData.lastName || "N/A"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm mb-1 text-accent">Gender:</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="gender"
-                  value={editData.gender || ""}
-                  onChange={handleInputChange}
-                  className="input input-bordered bg-base-200 text-white w-full"
-                />
-              ) : (
-                <p>{displayData.gender || "N/A"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm mb-1 text-accent">Age:</label>
-              {isEditing ? (
-                <input
-                  type="number"
-                  name="age"
-                  value={editData.age || ""}
-                  onChange={handleInputChange}
-                  className="input input-bordered bg-base-200 text-white w-full"
-                />
-              ) : (
-                <p>{displayData.age || "N/A"}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm mb-1 text-accent">Experience:</label>
-              {isEditing ? (
-                <input
-                  type="number"
-                  name="experience"
-                  value={editData.experience ?? ""}
-                  onChange={handleInputChange}
-                  className="input input-bordered bg-base-200 text-white w-full"
-                />
-              ) : (
-                <p>{displayData.experience ?? 0}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm mb-1 text-accent">Email:</label>
-              <p>{displayData.emailId || "N/A"}</p>
-            </div>
-            <div>
-              <label className="block text-sm mb-1 text-accent">Joined Date:</label>
-              <p>{joinedDate}</p>
-            </div>
+            {[
+              { label: "First Name", key: "firstName" },
+              { label: "Last Name", key: "lastName" },
+              { label: "Gender", key: "gender" },
+              { label: "Age", key: "age", type: "number" },
+              { label: "Experience", key: "experience", type: "number" },
+              { label: "Email", key: "emailId", readOnly: true },
+              { label: "Joined Date", key: "joinedDate", readOnly: true },
+            ].map(({ label, key, type, readOnly }) => (
+              <div key={key}>
+                <label className="block text-sm text-gray-600 mb-1">
+                  {label}:
+                </label>
+                {isEditing && !readOnly ? (
+                  <input
+                    type={type || "text"}
+                    name={key}
+                    value={editData[key] || ""}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
+                  />
+                ) : (
+                  <p className="text-gray-700">
+                    {key === "joinedDate"
+                      ? joinedDate
+                      : displayData[key] || "N/A"}
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-        <hr className="my-4 border-gray-600" />
+
+        {/* About Section */}
         <div>
-          <label className="label text-accent">About:</label>
+          <label className="block text-sm text-gray-600 mb-1">About:</label>
           {isEditing ? (
             <textarea
               name="about"
               value={editData.about || ""}
               onChange={handleInputChange}
-              className="textarea textarea-bordered bg-base-200 text-white"
+              className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
               rows="3"
             />
           ) : (
-            <p>{displayData.about || "No description available."}</p>
+            <p className="text-gray-700">
+              {displayData.about || "No description available."}
+            </p>
           )}
         </div>
-        <hr className="my-4 border-gray-600" />
-        <div>
-          <label className="label text-accent">Skills:</label>
-          {isEditing ? (
-            <>
-              {(editData.skills || []).map((skill, i) => (
-                <div key={i} className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={skill}
-                    onChange={(e) =>
-                      handleArrayFieldChange("skills", i, e.target.value)
-                    }
-                    className="input input-bordered bg-base-200 text-white flex-1"
-                  />
-                  <button
-                    onClick={() => handleRemoveField("skills", i)}
-                    className="btn btn-xs btn-error"
+
+        {/* Skills & Interests */}
+        {[
+          { label: "Skills", key: "skills" },
+          { label: "Interests", key: "interests" },
+        ].map(({ label, key }) => (
+          <div key={key}>
+            <label className="block text-sm text-gray-600 mb-1">{label}:</label>
+            {isEditing ? (
+              <>
+                {(editData[key] || []).map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) =>
+                        handleArrayFieldChange(key, i, e.target.value)
+                      }
+                      className="w-full p-2 border border-gray-300 rounded-md text-gray-800"
+                    />
+                    <button
+                      onClick={() => handleRemoveField(key, i)}
+                      className="bg-red-500 text-white px-2 py-1 rounded-md"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => handleAddField(key)}
+                  className="bg-blue-500 text-white px-3 py-1 rounded-md"
+                >
+                  Add {label}
+                </button>
+              </>
+            ) : displayData[key]?.length > 0 ? (
+              <ul className="flex flex-wrap gap-2">
+                {displayData[key].map((item, idx) => (
+                  <li
+                    key={idx}
+                    className="bg-blue-300 text-blue-900 px-3 py-1 text-xs rounded-full"
                   >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={() => handleAddField("skills")}
-                className="btn btn-sm btn-accent"
-              >
-                Add Skill
-              </button>
-            </>
-          ) : displayData.skills && displayData.skills.length > 0 ? (
-            <ul className="list-disc list-inside">
-              {displayData.skills.map((skill, idx) => (
-                <li key={idx}>{skill}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No skills added.</p>
-          )}
-        </div>
-        <hr className="my-4 border-gray-600" />
-        <div>
-          <label className="label text-accent">Interests:</label>
-          {isEditing ? (
-            <>
-              {(editData.interests || []).map((interest, i) => (
-                <div key={i} className="flex items-center gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={interest}
-                    onChange={(e) =>
-                      handleArrayFieldChange("interests", i, e.target.value)
-                    }
-                    className="input input-bordered bg-base-200 text-white flex-1"
-                  />
-                  <button
-                    onClick={() => handleRemoveField("interests", i)}
-                    className="btn btn-xs btn-error"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                onClick={() => handleAddField("interests")}
-                className="btn btn-sm btn-accent"
-              >
-                Add Interest
-              </button>
-            </>
-          ) : displayData.interests && displayData.interests.length > 0 ? (
-            <ul className="list-disc list-inside">
-              {displayData.interests.map((interest, idx) => (
-                <li key={idx}>{interest}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No interests added.</p>
-          )}
-        </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700">No {label.toLowerCase()} added.</p>
+            )}
+          </div>
+        ))}
+
+        {/* Action Buttons */}
         {isEditing && (
-          <div className="mt-4 flex gap-4 justify-end">
-            <button onClick={handleEditToggle} className="btn btn-ghost">
+          <div className="flex justify-end gap-4">
+            <button
+              onClick={handleEditToggle}
+              className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition"
+            >
               Cancel
             </button>
-            <button onClick={handleSave} className="btn btn-primary">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-[#4B4896] text-white rounded-md hover:bg-[#3A3778] transition"
+            >
               Save
             </button>
           </div>

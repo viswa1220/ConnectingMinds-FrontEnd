@@ -76,87 +76,89 @@ const ChatRoom = ({ chatId, userId, receiverId, onClose, isGroup = false }) => {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-3xl h-[60vh] bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg shadow-lg overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between bg-gray-100 dark:bg-gray-800 px-4 py-3 border-b border-gray-300 dark:border-gray-700">
-        <button onClick={onClose} className="text-gray-700 dark:text-gray-300">
-          <FiArrowLeft size={24} />
-        </button>
-        {receiver && (
-          <div className="flex items-center">
-            {receiver.photoUrl ? (
-              <img
-                src={receiver.photoUrl}
-                alt="Receiver"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-            ) : (
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 text-white mr-3">
-                {getInitials(`${receiver.firstName} ${receiver.lastName}`)}
-              </div>
-            )}
-            <div>
-              <h3 className="text-lg font-bold">
-                {receiver.firstName} {receiver.lastName}
-              </h3>
-              {receiver.emailId && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {receiver.emailId}
-                </p>
-              )}
+    <div className="flex flex-col w-full max-w-3xl h-[65vh] bg-white text-[#4B4896] rounded-lg shadow-lg overflow-hidden border border-gray-300">
+    {/* Header */}
+    <div className="flex items-center justify-between bg-[#8F8AC3] text-white px-4 py-3">
+      {/* Back Button */}
+      <button onClick={onClose} className="text-white hover:text-gray-200">
+        <FiArrowLeft size={24} />
+      </button>
+  
+      {/* Receiver Info */}
+      {receiver && (
+        <div className="flex items-center">
+          {receiver.photoUrl ? (
+            <img
+              src={receiver.photoUrl}
+              alt="Receiver"
+              className="w-10 h-10 rounded-full mr-3 border-2 border-white"
+            />
+          ) : (
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#4B4896] text-white mr-3">
+              {getInitials(`${receiver.firstName} ${receiver.lastName}`)}
             </div>
+          )}
+          <div>
+            <h3 className="text-lg font-bold">{receiver.firstName} {receiver.lastName}</h3>
+            {receiver.emailId && (
+              <p className="text-xs text-gray-200">{receiver.emailId}</p>
+            )}
           </div>
-        )}
-        <button onClick={onClose} className="text-gray-700 dark:text-gray-300">
-          <FiX size={24} />
-        </button>
-      </div>
-      {/* Chat Messages */}
-      <div className="flex-1 px-4 py-2 overflow-y-auto bg-white dark:bg-gray-900">
-        {messages.map((msg) => (
+        </div>
+      )}
+  
+      {/* Close Button */}
+      <button onClick={onClose} className="text-white hover:text-gray-200">
+        <FiX size={24} />
+      </button>
+    </div>
+  
+    {/* Chat Messages */}
+    <div className="flex-1 px-4 py-2 overflow-y-auto bg-white">
+      {messages.map((msg) => (
+        <div
+          key={msg._id}
+          className={`flex mb-3 ${msg.sender._id === userId ? "justify-end" : "justify-start"}`}
+        >
           <div
-            key={msg._id}
-            className={`flex mb-3 ${
-              msg.sender._id === userId ? "justify-end" : "justify-start"
+            className={`max-w-xs px-4 py-2 rounded-lg shadow ${
+              msg.sender._id === userId
+                ? "bg-[#4B4896] text-white"
+                : "bg-gray-200 text-gray-900"
             }`}
           >
-            <div
-              className={`max-w-xs px-4 py-2 rounded-lg ${
-                msg.sender._id === userId
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
-              }`}
-            >
-              <p className="text-sm">{msg.text}</p>
-              <p className="text-xs mt-1 text-right text-gray-600 dark:text-gray-400">
-                {dayjs(msg.createdAt).format("h:mm A")}
-              </p>
-            </div>
+            <p className="text-sm">{msg.text}</p>
+            <p className="text-xs mt-1 text-right text-gray-500">
+              {dayjs(msg.createdAt).format("h:mm A")}
+            </p>
           </div>
-        ))}
-        <div ref={dummyRef} />
-      </div>
-      {/* Message Input */}
-      <div className="flex items-center p-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700">
-        <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-          <FiPaperclip size={20} />
-        </button>
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          className="flex-1 mx-3 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none"
-        />
-        <button
-          onClick={handleSend}
-          className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition"
-        >
-          <FiSend size={20} />
-        </button>
-      </div>
+        </div>
+      ))}
+      <div ref={dummyRef} />
     </div>
+  
+    {/* Message Input */}
+    <div className="flex items-center p-4 bg-[#8F8AC3] border-t border-gray-300">
+      <button className="p-2 text-white hover:text-gray-200">
+        <FiPaperclip size={20} />
+      </button>
+      <input
+        type="text"
+        placeholder="Type a message..."
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        className="flex-1 mx-3 p-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none"
+      />
+      <button
+        onClick={handleSend}
+        className="p-2 bg-[#4B4896] hover:bg-[#3A3778] text-white rounded-lg transition"
+      >
+        <FiSend size={20} />
+      </button>
+    </div>
+  </div>
+  
   );
 };
 

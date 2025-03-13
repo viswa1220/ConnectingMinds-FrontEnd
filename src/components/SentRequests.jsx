@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { BASE_URL } from "../utils/constants";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FiUserCheck,
   FiClock,
@@ -9,9 +10,11 @@ import {
   FiArrowLeft,
   FiStar,
   FiCode,
+  FiMail,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
+import { getSkillColor } from "../utils/skillColors";
 
 const SentRequests = () => {
   const [sentRequests, setSentRequests] = useState([]);
@@ -65,151 +68,146 @@ const SentRequests = () => {
     return <div className="text-center text-red-500">{error}</div>;
   if (sentRequests.length === 0) {
     return (
-      <div className="min-h-screen text-center text-gray-400">
+      <div className="bg-[#8F8AC3] min-h-screen text-center text-gray-400">
         No sent requests found.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h2 className="text-4xl font-bold mb-8 text-center text-blue-400">
-        Sent Requests
-      </h2>
-      <Link to="/feed" className="text-blue-400 mb-4 inline-flex items-center">
-        <FiArrowLeft className="mr-2" /> Back to feed
+    <div className="min-h-screen bg-[#8F8AC3] p-10 text-white">
+    {/* Page Title */}
+    <h2 className="text-4xl font-bold text-center mb-8">Sent Requests</h2>
+  
+    {/* Back Button */}
+    <div className="flex justify-start mb-6">
+      <Link to="/feed" className="flex items-center text-white hover:text-gray-300 transition">
+        <FiArrowLeft size={18} className="mr-2" />
+        Back to Feed
       </Link>
-
-      {/* Tabs */}
-      <div className="flex justify-center mb-6 space-x-4">
+    </div>
+  
+    {/* Tabs for Filtering Requests */}
+    <div className="flex justify-center mb-6 space-x-4">
+      {["pending", "accepted", "rejected"].map((tab) => (
         <button
-          onClick={() => setActiveTab("pending")}
+          key={tab}
+          onClick={() => setActiveTab(tab)}
           className={`px-4 py-2 rounded-full transition ${
-            activeTab === "pending"
-              ? "bg-yellow-600 text-white"
-              : "bg-gray-700 text-gray-300"
+            activeTab === tab ? "bg-[#4B4896] text-white" : "bg-gray-200 text-gray-800"
           }`}
         >
-          Pending
+          {tab.charAt(0).toUpperCase() + tab.slice(1)}
         </button>
-        <button
-          onClick={() => setActiveTab("accepted")}
-          className={`px-4 py-2 rounded-full transition ${
-            activeTab === "accepted"
-              ? "bg-green-600 text-white"
-              : "bg-gray-700 text-gray-300"
-          }`}
-        >
-          Accepted
-        </button>
-        <button
-          onClick={() => setActiveTab("rejected")}
-          className={`px-4 py-2 rounded-full transition ${
-            activeTab === "rejected"
-              ? "bg-red-600 text-white"
-              : "bg-gray-700 text-gray-300"
-          }`}
-        >
-          Rejected
-        </button>
-      </div>
-
-      {/* Requests Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRequests.length > 0 ? (
-          filteredRequests.map((request) => {
-            const user = request.toUserId;
-            // Convert skills/interests to arrays (handle both string/array)
-            let skillsArray = Array.isArray(user.skills)
-              ? user.skills
-              : typeof user.skills === "string"
-              ? user.skills.split(",")
-              : [];
-            skillsArray = skillsArray.map((s) => s.trim()).filter((s) => s);
-
-            let interestsArray = Array.isArray(user.interests)
-              ? user.interests
-              : typeof user.interests === "string"
-              ? user.interests.split(",")
-              : [];
-            interestsArray = interestsArray.map((i) => i.trim()).filter((i) => i);
-
-            return (
-              <div
-                key={request._id}
-                className="p-4 bg-gradient-to-b from-gray-800 to-gray-700 rounded-lg shadow-lg"
-              >
-                <div className="flex items-center mb-4">
+      ))}
+    </div>
+  
+    {/* Requests Grid */}
+    <motion.div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto max-w-[85%]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {filteredRequests.length > 0 ? (
+        filteredRequests.map((request) => {
+          const user = request.toUserId;
+          const skillsArray = Array.isArray(user.skills)
+            ? user.skills
+            : typeof user.skills === "string"
+            ? user.skills.split(",").map((s) => s.trim())
+            : [];
+            
+          return (
+            <motion.div
+            key={request._id}
+            className="rounded-xl shadow-md p-5 bg-white text-[#4B4896] flex flex-col justify-between border border-gray-200 hover:shadow-xl transition-all"
+            whileHover={{ scale: 1.02 }}
+          >
+            {/* Profile Info */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                {user.photoUrl ? (
                   <img
-                    src={user.photoUrl || "https://via.placeholder.com/50"}
+                    src={user.photoUrl}
                     alt="Profile"
-                    className="w-12 h-12 rounded-full mr-3 object-cover"
+                    className="w-14 h-14 rounded-full mr-4 object-cover border border-gray-300 shadow-sm"
                   />
-                  <div>
-                    <h3 className="text-xl font-bold text-yellow-400">
-                      {user.firstName} {user.lastName}
-                    </h3>
-                    <p className="text-sm text-gray-400">
-                      Joined: {dayjs(user.createdAt).format("DD MMM YYYY")}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Skills */}
-                <div className="mb-2">
-                  <h4 className="text-sm font-bold text-green-300 mb-1">Skills</h4>
-                  {skillsArray.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {skillsArray.map((skill, index) => (
-                        <button
-                          key={index}
-                          className="flex items-center bg-green-600 hover:bg-green-500 transition text-xs px-3 py-1 rounded-full"
-                          disabled
-                        >
-                          <FiStar className="inline mr-1" />
-                          {skill}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-gray-400">No skills provided.</p>
-                  )}
-                </div>
-
-                {/* Sent Date */}
-                <p className="text-sm text-gray-400 mb-2">
-                  Sent on: {dayjs(request.createdAt).format("DD MMM YYYY")}
-                </p>
-
-                {/* Status Badge */}
-                {request.status === "pending" && (
-                  <div className="mt-4 p-2 w-full bg-yellow-600 rounded-full text-center">
-                    <FiClock className="inline-block mr-2" />
-                    Pending
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-[#4B4896]">
+                    {user.firstName[0]}
+                    {user.lastName[0]}
                   </div>
                 )}
-                {request.status === "accepted" && (
-                  <div className="mt-4 p-2 w-full bg-green-600 rounded-full text-center">
-                    <FiUserCheck className="inline-block mr-2" />
-                    Connected
-                  </div>
-                )}
-                {request.status === "rejected" && (
-                  <div className="mt-4 p-2 w-full bg-red-600 rounded-full text-center">
-                    <FiXCircle className="inline-block mr-2" />
-                    Rejected
-                  </div>
+                <div>
+                  <h3 className="text-lg font-bold flex items-center">
+                    {user.firstName} {user.lastName}
+                    {/* Status Badge (Right-aligned on name line) */}
+                    {request.status === "pending" && (
+                      <span className="ml-3 px-2 py-1 text-xs rounded-full bg-yellow-500 text-white">
+                        <FiClock className="inline-block mr-1" />
+                        Pending
+                      </span>
+                    )}
+                    {request.status === "accepted" && (
+                      <span className="ml-3 px-2 py-1 text-xs rounded-full bg-green-500 text-white">
+                        <FiUserCheck className="inline-block mr-1" />
+                        Connected
+                      </span>
+                    )}
+                    {request.status === "rejected" && (
+                      <span className="ml-3 px-2 py-1 text-xs rounded-full bg-red-500 text-white">
+                        <FiXCircle className="inline-block mr-1" />
+                        Rejected
+                      </span>
+                    )}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    <FiMail className="mr-1" />
+                    {user.emailId}
+                  </p>
+                </div>
+              </div>
+            </div>
+          
+            {/* Skills Section */}
+            <div className="mb-3">
+              <h4 className="text-sm font-semibold text-gray-600 mb-1">Skills</h4>
+              <div className="flex flex-wrap gap-2">
+                {skillsArray.length > 0 ? (
+                  skillsArray.map((skill, index) => (
+                    <span
+                      key={index}
+                      className={`px-3 py-1 text-xs rounded-full ${getSkillColor(skill)}`}
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <span className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded-full">
+                    Not provided
+                  </span>
                 )}
               </div>
-            );
-          })
-        ) : (
-          <div className="text-center text-gray-400 w-full col-span-3">
-            No {activeTab} requests found.
-          </div>
-        )}
-      </div>
-    </div>
+            </div>
+          
+            {/* Sent Date */}
+            <p className="text-sm text-gray-500 flex items-center">
+              <FiClock className="mr-1" />
+              Sent on: {dayjs(request.createdAt).format("DD MMM YYYY")}
+            </p>
+          </motion.div>
+          
+          );
+        })
+      ) : (
+        <div className="text-center text-gray-400 w-full col-span-3">
+          No {activeTab} requests found.
+        </div>
+      )}
+    </motion.div>
+  </div>
+  
   );
 };
 

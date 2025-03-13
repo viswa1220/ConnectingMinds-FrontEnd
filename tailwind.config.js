@@ -27,11 +27,11 @@ export default {
       },
       {
         "connecting-minds": {
-          "primary": "#6968AA", // Soft Purple
+          "primary": "#7977B4",  // Updated Soft Purple
           "secondary": "#10B981", // Emerald Green
-          "accent": "#F59E0B", // Soft Orange
-          "neutral": "#F3F4F6", // Light Gray for cards/panels
-          "base-100": "#FFFFFF", // White background
+          "accent": "#F59E0B",    // Soft Orange
+          "neutral": "#F3F4F6",   // Light Gray for cards/panels
+          "base-100": "#FFFFFF",  // White background
           "info": "#3ABFF8",
           "success": "#36D399",
           "warning": "#FBBD23",

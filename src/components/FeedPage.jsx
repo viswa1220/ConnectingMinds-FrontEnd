@@ -4,7 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import dayjs from "dayjs";
 import { FiUserPlus, FiBookmark } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { getSkillColor } from "../utils/skillColors";
 const FeedPage = () => {
   const [viewMode, setViewMode] = useState("feed"); // "feed" or "saved"
   const [projects, setProjects] = useState([]);
@@ -40,7 +40,6 @@ const FeedPage = () => {
       setLoadingProjects(false);
     }
   };
-  
 
   // Function to fetch saved projects (only open projects)
   const fetchSavedProjects = async () => {
@@ -129,22 +128,24 @@ const FeedPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8 text-white">
-      <h3 className="text-3xl font-bold mb-8 text-green-400 text-center">
+    <div className="min-h-screen bg-[#8F8AC3] py-6 px-4">
+      {/* Title */}
+      <h3 className="text-3xl font-bold mb-6 text-white text-center">
         Explore Projects
       </h3>
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+
+      {/* Search & View Mode Toggle */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
         <input
           type="text"
           placeholder="Search..."
-          className="input input-bordered input-sm w-full md:w-[30rem] bg-gray-800 py-4"
+          className="input input-bordered w-full md:w-96 bg-white text-gray-700 placeholder-gray-400 py-2 px-3 focus:outline-none"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <button
-            className={`btn ${
+            className={`btn btn-sm ${
               viewMode === "feed" ? "btn-primary" : "btn-outline"
             }`}
             onClick={() => setViewMode("feed")}
@@ -152,7 +153,7 @@ const FeedPage = () => {
             Project Feed
           </button>
           <button
-            className={`btn ${
+            className={`btn btn-sm ${
               viewMode === "saved" ? "btn-primary" : "btn-outline"
             }`}
             onClick={() => setViewMode("saved")}
@@ -162,13 +163,12 @@ const FeedPage = () => {
         </div>
       </div>
 
-      
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 mb-20">
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto">
         {loadingProjects ? (
-          <p className="text-gray-400 text-center">Loading projects...</p>
+          <p className="text-white text-center">Loading projects...</p>
         ) : projects.length === 0 ? (
-          <p className="text-gray-400 text-center">
+          <p className="text-white text-center">
             {viewMode === "saved"
               ? "No saved projects found."
               : "No projects found in your feed."}
@@ -177,60 +177,73 @@ const FeedPage = () => {
           projects.map((proj) => (
             <motion.div
               key={proj._id}
-              className="card bg-gray-800 border border-gray-700 shadow-xl rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 relative"
-              whileHover={{ scale: 1.03 }}
+              className="card bg-gray-50 text-gray-800 shadow-md rounded-xl overflow-hidden transition-all"
+              // Subtle 3D hover
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
+              }}
             >
-              <div className="card-body p-6">
-                <div className="flex items-center mb-6">
+              <div className="card-body p-4">
+                {/* Creator Info */}
+                <div className="flex items-center mb-4">
                   <img
                     src={proj.createdBy.photoUrl || "/default-profile.png"}
                     alt="creator"
-                    className="w-16 h-16 rounded-full mr-5 border-2 border-blue-400 shadow-md object-cover"
+                    className="w-14 h-14 rounded-full mr-4 border-2 border-primary object-cover"
                   />
                   <div>
-                    <h4 className="font-bold text-lg text-blue-300">
+                    <h4 className="font-semibold text-primary">
                       {proj.createdBy.firstName} {proj.createdBy.lastName}
                     </h4>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-500">
                       {proj.createdBy.emailId}
                     </p>
                   </div>
                 </div>
-                <h3 className="card-title text-2xl font-bold mb-3 text-yellow-400">
+
+                {/* Project Title & Description */}
+                <h3 className="card-title text-xl font-bold mb-2 text-secondary">
                   {proj.title || "Untitled Project"}
                 </h3>
-                <p className="mb-5 text-gray-300">
+                <p className="mb-4 text-gray-600">
                   {proj.description || "No description provided."}
                 </p>
-                <div className="mb-4">
-                  <p className="text-md font-bold mb-2 text-gray-300">
+
+                <div className="mb-3">
+                  <p className="text-md font-semibold text-gray-700 mb-1">
                     Tech Stack learned:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {proj.skillsRequired?.map((skill, index) => (
                       <span
                         key={index}
-                        className="px-2 py-1 bg-blue-600 text-white text-sm rounded-md shadow-md"
+                        className={`inline-block px-2 py-1 rounded-md text-sm font-medium ${getSkillColor(
+                          skill
+                        )}`}
                       >
                         {skill}
                       </span>
                     ))}
                   </div>
-                  <p className="text-md mt-3 text-gray-300">
-                    <strong>Status:</strong>{" "}
-                    <span className="capitalize">{proj.status}</span>
-                  </p>
                 </div>
-                <div className="flex justify-between items-center mb-4 text-gray-400">
-                  <p className="text-sm">
+                {/* Status & Metadata */}
+                <p className="text-sm text-gray-600 mb-3">
+                  <strong>Status:</strong>{" "}
+                  <span className="capitalize">{proj.status}</span>
+                </p>
+                <div className="flex justify-between items-center text-gray-500 text-sm mb-3">
+                  <p>
                     <strong>Collaborators:</strong> {proj.collaborators.length}
                   </p>
-                  <p className="text-sm">
+                  <p>
                     <strong>Created:</strong>{" "}
                     {dayjs(proj.createdAt).format("MMM D, YYYY")}
                   </p>
                 </div>
-                <div className="card-actions justify-between">
+
+                {/* Actions */}
+                <div className="card-actions flex justify-between items-center">
                   {viewMode === "feed" && (
                     <>
                       <button
@@ -240,7 +253,7 @@ const FeedPage = () => {
                         }
                       >
                         <FiUserPlus className="mr-1" />
-                        Join Project
+                        Join
                       </button>
                       <div className="flex gap-2">
                         <button
@@ -273,7 +286,7 @@ const FeedPage = () => {
                         }
                       >
                         <FiUserPlus className="mr-1" />
-                        Join Project
+                        Join
                       </button>
                       <button
                         className="btn btn-sm btn-error"
@@ -302,26 +315,26 @@ const FeedPage = () => {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="modal-box bg-gray-800 p-6 rounded-lg max-w-lg w-full"
+              className="modal-box bg-white p-6 rounded-lg max-w-lg w-full"
               initial={{ y: "-50%", opacity: 0 }}
               animate={{ y: "0", opacity: 1 }}
               exit={{ y: "-50%", opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="text-2xl font-bold mb-4 text-white">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
                 Join Project
               </h2>
               <input
                 type="text"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full mb-4 p-2 bg-gray-700 rounded text-white"
+                className="w-full mb-4 p-2 bg-gray-100 rounded text-gray-800"
                 placeholder="Enter your role"
               />
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full mb-4 p-2 bg-gray-700 rounded text-white"
+                className="w-full mb-4 p-2 bg-gray-100 rounded text-gray-800"
                 placeholder="Add a message (optional)"
               ></textarea>
               <div className="flex justify-end space-x-4">
@@ -357,16 +370,16 @@ const FeedPage = () => {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="modal-box bg-gray-800 p-6 rounded-lg max-w-md w-full"
+              className="modal-box bg-white p-6 rounded-lg max-w-md w-full"
               initial={{ y: "-50%", opacity: 0 }}
               animate={{ y: "0", opacity: 1 }}
               exit={{ y: "-50%", opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="text-xl font-bold mb-4 text-white">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">
                 Confirm Ignore
               </h2>
-              <p className="mb-6 text-gray-300">
+              <p className="mb-6 text-gray-600">
                 Are you sure you want to ignore this project? It won't show up
                 in your feed (and will be removed from saved projects if
                 present).

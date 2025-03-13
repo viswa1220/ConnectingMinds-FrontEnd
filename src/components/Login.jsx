@@ -34,53 +34,62 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-8 text-white">
-      <div className="card w-full max-w-md bg-neutral shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title text-center text-primary text-3xl mb-4">
-            Login
-          </h2>
-          <label className="label">
-            <span className="label-text text-white">Email Address</span>
+    <div className="flex items-center justify-center min-h-screen bg-[#8F8AC3] text-white px-4">
+      <div className="bg-white text-[#4B4896] shadow-lg rounded-lg w-full max-w-md p-6">
+        {/* Login Title */}
+        <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
+
+        {/* Email Input */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Email Address
           </label>
           <input
             type="email"
             value={emailId}
             placeholder="Enter your email"
-            className="input input-bordered w-full bg-base-100 text-white mb-4"
+            className="w-full p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:border-[#4B4896]"
             onChange={(e) => setEmailId(e.target.value)}
           />
-          <label className="label">
-            <span className="label-text text-white">Password</span>
+        </div>
+
+        {/* Password Input */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Password
           </label>
           <input
             type="password"
             value={password}
             placeholder="Enter your password"
-            className="input input-bordered w-full bg-base-100 text-white"
+            className="w-full p-2 border border-gray-300 rounded-md text-gray-800 focus:outline-none focus:border-[#4B4896]"
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="text-error text-center mt-2">{error}</p>}
-          <div className="card-actions justify-center mt-6">
-            <button
-              className="btn btn-primary w-full"
-              onClick={handleLogin}
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="loading loading-spinner"></span>
-              ) : (
-                "Login"
-              )}
-            </button>
-          </div>
-          <p className="text-center mt-4">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-blue-400 hover:underline">
-              Sign Up
-            </Link>
-          </p>
         </div>
+
+        {/* Error Message */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        {/* Login Button */}
+        <button
+          className="w-full py-2 bg-[#4B4896] text-white rounded-md hover:bg-[#3A3778] transition flex justify-center items-center"
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="loading loading-spinner"></span>
+          ) : (
+            "Login"
+          )}
+        </button>
+
+        {/* Sign Up Link */}
+        <p className="text-center text-gray-600 mt-4">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-[#4B4896] hover:underline">
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );
