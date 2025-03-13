@@ -22,6 +22,11 @@ const SentRequests = () => {
   const loggedInUser = useSelector((state) => state.user);
   const loggedInUserId = loggedInUser?._id;
 
+  // Early return if user info isn't available yet
+  if (!loggedInUserId) {
+    return <div className="text-center text-gray-400">Loading user info...</div>;
+  }
+
   useEffect(() => {
     const fetchSentRequests = async () => {
       setLoading(true);
@@ -29,25 +34,35 @@ const SentRequests = () => {
         const res = await axios.get(`${BASE_URL}/api/people/requests`, {
           withCredentials: true,
         });
-        // Filter to only those requests sent by logged-in user
+        console.log("All sent requests:", res.data.data);
+        // Filter to only those requests sent by the logged-in user (compare as strings)
         const filtered = res.data.data.filter(
-          (req) => req.fromUserId._id === loggedInUserId
+          (req) =>
+            req.fromUserId._id.toString() === loggedInUserId.toString()
         );
+        console.log("Filtered sent requests:", filtered);
         setSentRequests(filtered);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to fetch sent requests.");
+        setError(
+          err.response?.data?.message || "Failed to fetch sent requests."
+        );
       } finally {
         setLoading(false);
       }
     };
-    if (loggedInUserId) fetchSentRequests();
+
+    fetchSentRequests();
   }, [loggedInUserId]);
 
   // Filter requests based on active tab
-  const filteredRequests = sentRequests.filter((req) => req.status === activeTab);
+  const filteredRequests = sentRequests.filter(
+    (req) => req.status === activeTab
+  );
 
-  if (loading) return <div className="text-center text-gray-400">Loading...</div>;
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (loading)
+    return <div className="text-center text-gray-400">Loading...</div>;
+  if (error)
+    return <div className="text-center text-red-500">{error}</div>;
   if (sentRequests.length === 0) {
     return (
       <div className="min-h-screen text-center text-gray-400">
@@ -160,8 +175,6 @@ const SentRequests = () => {
                     <p className="text-xs text-gray-400">No skills provided.</p>
                   )}
                 </div>
-
-              
 
                 {/* Sent Date */}
                 <p className="text-sm text-gray-400 mb-2">
