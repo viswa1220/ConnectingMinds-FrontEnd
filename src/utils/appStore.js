@@ -1,8 +1,8 @@
-// appStore.js
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import userReducer from "./userSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+
 // Create a root reducer (even if it's just one slice)
 const rootReducer = combineReducers({
   user: userReducer,
@@ -29,5 +29,16 @@ const appStore = configureStore({
 
 // Create a persistor linked to the store
 export const persistor = persistStore(appStore);
+
+export const waitForRehydration = () => {
+  return new Promise((resolve) => {
+    const unsubscribe = persistor.subscribe(() => {
+      if (persistor.getState()._persist.rehydrated) {
+        resolve();
+        unsubscribe();
+      }
+    });
+  });
+};
 
 export default appStore;
