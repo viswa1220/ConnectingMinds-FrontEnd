@@ -38,12 +38,17 @@ useEffect(() => {
   const handleLogout = async () => {
     try {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-      dispatch(removeUser());
+  
+      dispatch(removeUser()); 
+      setUser(null);
+  
+      console.log("User logged out and state cleared");
       navigate("/login");
     } catch (err) {
       console.log("Logout Failed: ", err);
     }
   };
+  
 
   const toggleDropdown = (name) => {
     setDropdownOpen((prev) => (prev === name ? null : name));
