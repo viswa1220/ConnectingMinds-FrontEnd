@@ -23,12 +23,14 @@ const FeedPage = () => {
   const [isIgnoring, setIsIgnoring] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Function to fetch feed projects
   const fetchProjects = async () => {
     setLoadingProjects(true);
     try {
       const res = await axios.get(`${BASE_URL}/api/projects/feed`, {
-        withCredentials: true,
+        withCredentials: true, // ✅ Ensures cookies are sent
+        headers: {
+          "Content-Type": "application/json",
+        },
         params: { search: searchQuery },
       });
       setProjects(res.data.data);
@@ -38,6 +40,7 @@ const FeedPage = () => {
       setLoadingProjects(false);
     }
   };
+  
 
   // Function to fetch saved projects (only open projects)
   const fetchSavedProjects = async () => {
