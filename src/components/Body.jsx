@@ -1,11 +1,11 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Footer from "./Footer";
+import NavBar from "./NavBar";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../utils/userSlice";
+import { addUser, removeUser } from "../utils/userSlice";
 import { useEffect, useState } from "react";
-import NavBar from "./NavBar";
 
 const Body = () => {
   const dispatch = useDispatch();
@@ -14,40 +14,51 @@ const Body = () => {
   const userData = useSelector((store) => store.user);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Fetch user only if not removed from Redux
   const fetchUser = async () => {
-    // If we already have user data, stop loading
-    if (userData) {
+    if (!userData) {
       setLoading(false);
-      return;
+      return; // 🔥 Stop fetching if user is already removed
     }
+
     try {
       const res = await axios.get(`${BASE_URL}/profile/view`, {
         withCredentials: true,
       });
-      dispatch(addUser(res.data));
+
+      if (res.data && res.data._id) {
+        dispatch(addUser(res.data)); // ✅ Add user if valid response
+      } else {
+        dispatch(removeUser()); // ✅ Ensure user is fully removed
+      }
+
       setLoading(false);
     } catch (err) {
-      // Check for a 401 error from the server
-      if (err.response && err.response.status === 401) {
+      if (err.response?.status === 401) {
+        dispatch(removeUser()); // ✅ Remove user on unauthorized
         navigate("/login");
       } else {
-        console.log("error", err);
+        console.log("Fetch user error:", err);
       }
       setLoading(false);
     }
   };
 
+  // ✅ Ensure user data updates properly
   useEffect(() => {
-    fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (userData === null) {
+      setLoading(false);
+    } else {
+      fetchUser();
+    }
+  }, [userData]); // ✅ Runs when Redux user changes
 
-  // While loading, you could return a spinner or similar
+  // ✅ Show loading state until user data is ready
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-gray-400">Loading...</div>;
   }
 
-  // Optionally hide the footer on specific pages
+  // ✅ Hide the footer on specific routes
   const hideFooter = ["/login", "/signup"].some((path) =>
     location.pathname.startsWith(path)
   );
