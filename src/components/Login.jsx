@@ -30,7 +30,7 @@ const Login = () => {
       }
     };
 
-    if (location.pathname === "/login") {
+    if (location.pathname === "/logn") {
       checkAuthStatus();
     }
   }, [dispatch, location.pathname]);
