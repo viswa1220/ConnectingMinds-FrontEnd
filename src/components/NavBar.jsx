@@ -34,14 +34,17 @@ const NavBar = () => {
     try {
       setLoggingOut(true); // ✅ Show loader
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
-      dispatch(removeUser());
-      navigate("/login");
+  
+      dispatch(removeUser()); // ✅ Remove user from Redux
+      await new Promise((resolve) => setTimeout(resolve, 500)); // ⏳ Small delay for consistency
+      navigate("/login"); // ✅ Now navigate AFTER logout is fully done
     } catch (err) {
       console.log("Logout Failed: ", err);
     } finally {
       setLoggingOut(false);
     }
   };
+  
 
   const toggleDropdown = (name) => {
     setDropdownOpen((prev) => (prev === name ? null : name));
